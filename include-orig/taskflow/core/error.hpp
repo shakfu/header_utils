@@ -1,5 +1,4 @@
-#ifndef TASKFLOW_ERROR_H
-#define TASKFLOW_ERROR_H
+#pragma once
 
 #include <iostream>
 #include <sstream>
@@ -25,5 +24,3 @@ void throw_re(const char* fname, const size_t line, ArgsT&&... args) {
 
 #define TF_THROW(...) tf::throw_re(__FILE__, __LINE__, __VA_ARGS__);
 
-
-#endif // TASKFLOW_ERROR_H

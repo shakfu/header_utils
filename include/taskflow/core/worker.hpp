@@ -1,5 +1,5 @@
-#ifndef TASKFLOW_WORKER_H
-#define TASKFLOW_WORKER_H
+#ifndef TASKFLOW_CORE_WORKER_HPP
+#define TASKFLOW_CORE_WORKER_HPP
 
 #include <taskflow/core/declarations.hpp>
 #include <taskflow/core/tsq.hpp>
@@ -237,5 +237,5 @@ class WorkerInterface {
 
 }  // end of namespact tf -----------------------------------------------------
 
-#endif // TASKFLOW_WORKER_H
 
+#endif // TASKFLOW_CORE_WORKER_HPP

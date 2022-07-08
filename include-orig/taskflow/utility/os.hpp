@@ -1,5 +1,4 @@
-#ifndef TASKFLOW_UTIL_OS_H
-#define TASKFLOW_UTIL_OS_H
+#pragma once
 
 #include <cstdlib>
 #include <cstdio>
@@ -184,7 +183,7 @@ inline bool has_env(const std::string& str) {
 }  // end of namespace tf -----------------------------------------------------
 
 
-#endif // TASKFLOW_UTIL_OS_H
+
 
 
 

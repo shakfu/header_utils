@@ -1,5 +1,5 @@
-#ifndef TASKFLOW_ALGO_PIPELINE_H
-#define TASKFLOW_ALGO_PIPELINE_H
+#ifndef TASKFLOW_ALGORITHM_PIPELINE_HPP
+#define TASKFLOW_ALGORITHM_PIPELINE_HPP
 
 #include <taskflow/taskflow.hpp>
 
@@ -1242,5 +1242,7 @@ void ScalablePipeline<P>::_build() {
 }  // end of namespace tf -----------------------------------------------------
 
 
-#endif // TASKFLOW_ALGO_PIPELINE_H
 
+
+
+#endif // TASKFLOW_ALGORITHM_PIPELINE_HPP

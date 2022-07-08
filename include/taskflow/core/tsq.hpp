@@ -1,5 +1,5 @@
-#ifndef TASKFLOW_TSQ_H
-#define TASKFLOW_TSQ_H
+#ifndef TASKFLOW_CORE_TSQ_HPP
+#define TASKFLOW_CORE_TSQ_HPP
 
 #include <atomic>
 #include <vector>
@@ -264,5 +264,4 @@ int64_t TaskQueue<T>::capacity() const noexcept {
 }
 
 }  // end of namespace tf -----------------------------------------------------
-
-#endif // TASKFLOW_TSQ_H
+#endif // TASKFLOW_CORE_TSQ_HPP

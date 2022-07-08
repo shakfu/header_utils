@@ -1,5 +1,5 @@
-#ifndef TASKFLOW_ALGO_REDUCE_H
-#define TASKFLOW_ALGO_REDUCE_H
+#ifndef TASKFLOW_ALGORITHM_REDUCE_HPP
+#define TASKFLOW_ALGORITHM_REDUCE_HPP
 
 #include <taskflow/core/executor.hpp>
 
@@ -259,5 +259,6 @@ Task FlowBuilder::transform_reduce(
 }  // end of namespace tf -----------------------------------------------------
 
 
-#endif // TASKFLOW_ALGO_REDUCE_H
 
+
+#endif // TASKFLOW_ALGORITHM_REDUCE_HPP

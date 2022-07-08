@@ -1,5 +1,5 @@
-#ifndef TASKFLOW_UTIL_ITERATOR_H
-#define TASKFLOW_UTIL_ITERATOR_H
+#ifndef TASKFLOW_UTILITY_ITERATOR_HPP
+#define TASKFLOW_UTILITY_ITERATOR_HPP
 
 #include <cstddef>
 #include <type_traits>
@@ -21,5 +21,4 @@ is_range_invalid(T beg, T end, T step) {
 }
 
 }  // end of namespace tf -----------------------------------------------------
-
-#endif // TASKFLOW_UTIL_ITERATOR_H
+#endif // TASKFLOW_UTILITY_ITERATOR_HPP

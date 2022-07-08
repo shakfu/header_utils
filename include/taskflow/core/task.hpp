@@ -1,5 +1,5 @@
-#ifndef TASKFLOW_TASK_H
-#define TASKFLOW_TASK_H
+#ifndef TASKFLOW_CORE_TASK_HPP
+#define TASKFLOW_CORE_TASK_HPP
 
 #include <taskflow/core/graph.hpp>
 
@@ -22,6 +22,10 @@ namespace tf {
 enum class TaskType : int {
   /** @brief placeholder task type */
   PLACEHOLDER = 0,
+  /** @brief cudaFlow task type */
+  CUDAFLOW,
+  /** @brief syclFlow task type */
+  SYCLFLOW,
   /** @brief static task type */
   STATIC,
   /** @brief dynamic (subflow) task type */
@@ -46,6 +50,8 @@ enum class TaskType : int {
 */
 inline constexpr std::array<TaskType, 10> TASK_TYPES = {
   TaskType::PLACEHOLDER,
+  TaskType::CUDAFLOW,
+  TaskType::SYCLFLOW,
   TaskType::STATIC,
   TaskType::DYNAMIC,
   TaskType::CONDITION,
@@ -62,6 +68,8 @@ The name of each task type is the litte-case string of its characters.
 
 @code{.cpp}
 TaskType::PLACEHOLDER     ->  "placeholder"
+TaskType::CUDAFLOW        ->  "cudaflow"
+TaskType::SYCLFLOW        ->  "syclflow"
 TaskType::STATIC          ->  "static"
 TaskType::DYNAMIC         ->  "subflow"
 TaskType::CONDITION       ->  "condition"
@@ -77,6 +85,8 @@ inline const char* to_string(TaskType type) {
 
   switch(type) {
     case TaskType::PLACEHOLDER:      val = "placeholder";     break;
+    case TaskType::CUDAFLOW:         val = "cudaflow";        break;
+    case TaskType::SYCLFLOW:         val = "syclflow";        break;
     case TaskType::STATIC:           val = "static";          break;
     case TaskType::DYNAMIC:          val = "subflow";         break;
     case TaskType::CONDITION:        val = "condition";       break;
@@ -130,6 +140,25 @@ std::function<tf::SmallVector<int>()>.
 template <typename C>
 constexpr bool is_multi_condition_task_v =
   std::is_invocable_r_v<SmallVector<int>, C>;
+
+/**
+@brief determines if a callable is a %cudaFlow task
+
+A cudaFlow task is a callable object constructible from
+std::function<void(tf::cudaFlow&)> or std::function<void(tf::cudaFlowCapturer&)>.
+*/
+template <typename C>
+constexpr bool is_cudaflow_task_v = std::is_invocable_r_v<void, C, cudaFlow&> ||
+                                    std::is_invocable_r_v<void, C, cudaFlowCapturer&>;
+
+/**
+@brief determines if a callable is a %syclFlow task
+
+A syclFlow task is a callable object constructible from
+std::function<void(tf::syclFlow&)>.
+*/
+template <typename C>
+constexpr bool is_syclflow_task_v = std::is_invocable_r_v<void, C, syclFlow&>;
 
 /**
 @brief determines if a callable is a runtime task
@@ -235,7 +264,8 @@ class Task {
 
     @tparam C callable type
 
-    @param callable callable to construct one of static, dynamic, and condition tasks
+    @param callable callable to construct one of the static, dynamic, condition,
+           and cudaFlow tasks
 
     @return @c *this
     */
@@ -512,6 +542,8 @@ inline TaskType Task::type() const {
     case Node::MODULE:          return TaskType::MODULE;
     case Node::ASYNC:           return TaskType::ASYNC;
     case Node::SILENT_ASYNC:    return TaskType::ASYNC;
+    case Node::CUDAFLOW:        return TaskType::CUDAFLOW;
+    case Node::SYCLFLOW:        return TaskType::SYCLFLOW;
     case Node::RUNTIME:         return TaskType::RUNTIME;
     default:                    return TaskType::UNDEFINED;
   }
@@ -561,6 +593,9 @@ Task& Task::work(C&& c) {
   }
   else if constexpr(is_multi_condition_task_v<C>) {
     _node->_handle.emplace<Node::MultiCondition>(std::forward<C>(c));
+  }
+  else if constexpr(is_cudaflow_task_v<C>) {
+    _node->_handle.emplace<Node::cudaFlow>(std::forward<C>(c));
   }
   else if constexpr(is_runtime_task_v<C>) {
     _node->_handle.emplace<Node::Runtime>(std::forward<C>(c));
@@ -702,6 +737,8 @@ inline TaskType TaskView::type() const {
     case Node::MODULE:          return TaskType::MODULE;
     case Node::ASYNC:           return TaskType::ASYNC;
     case Node::SILENT_ASYNC:    return TaskType::ASYNC;
+    case Node::CUDAFLOW:        return TaskType::CUDAFLOW;
+    case Node::SYCLFLOW:        return TaskType::SYCLFLOW;
     case Node::RUNTIME:         return TaskType::RUNTIME;
     default:                    return TaskType::UNDEFINED;
   }
@@ -759,6 +796,5 @@ struct hash<tf::TaskView> {
 }  // end of namespace std ----------------------------------------------------
 
 
-#endif // TASKFLOW_TASK_H
 
-
+#endif // TASKFLOW_CORE_TASK_HPP

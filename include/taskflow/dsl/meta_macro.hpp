@@ -1,9 +1,7 @@
 // 2020/08/30 - Created by netcan: https://github.com/netcan
 // ref https://github.com/Erlkoenig90/map-macro/
-
-#ifndef TASKFLOW_DSL_METAMACRO_H
-#define TASKFLOW_DSL_METAMACRO_H
-
+#ifndef TASKFLOW_DSL_META_MACRO_HPP
+#define TASKFLOW_DSL_META_MACRO_HPP
 #ifdef _MSC_VER
 #define TF_EMPTY()
 #define TF_GET_ARG_COUNT_(...)                                                 \
@@ -73,6 +71,4 @@
 
 #define TF_MAP(f, ...)                                                         \
   TF_EVAL(TF_MAP1(f, __VA_ARGS__, ()()(), ()()(), ()()(), 0))
-
-
-#endif // TASKFLOW_DSL_METAMACRO_H
+#endif // TASKFLOW_DSL_META_MACRO_HPP

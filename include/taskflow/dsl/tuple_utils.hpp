@@ -1,8 +1,6 @@
 // 2020/08/28 - Created by netcan: https://github.com/netcan
-
-#ifndef TASKFLOW_DSL_TUPLE_UTILS_H
-#define TASKFLOW_DSL_TUPLE_UTILS_H
-
+#ifndef TASKFLOW_DSL_TUPLE_UTILS_HPP
+#define TASKFLOW_DSL_TUPLE_UTILS_HPP
 #include <cstddef>
 #include <tuple>
 
@@ -44,5 +42,4 @@ constexpr inline T AggregationByTup(TUP &&tup) {
 }
 } // namespace dsl
 } // namespace tf
-
-#endif // TASKFLOW_DSL_TUPLE_UTILS_H
+#endif // TASKFLOW_DSL_TUPLE_UTILS_HPP

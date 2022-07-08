@@ -1,8 +1,6 @@
 // 2020/08/28 - Created by netcan: https://github.com/netcan
-
-#ifndef TASKFLOW_DSL_ANALYZER_H
-#define TASKFLOW_DSL_ANALYZER_H
-
+#ifndef TASKFLOW_DSL_TASK_ANALYZER_HPP
+#define TASKFLOW_DSL_TASK_ANALYZER_HPP
 #include <taskflow/dsl/connection.hpp>
 #include <taskflow/dsl/type_list.hpp>
 #include <type_traits>
@@ -41,5 +39,4 @@ public:
 
 } // namespace dsl
 } // namespace tf
-
-#endif // TASKFLOW_DSL_ANALYZER_H
+#endif // TASKFLOW_DSL_TASK_ANALYZER_HPP

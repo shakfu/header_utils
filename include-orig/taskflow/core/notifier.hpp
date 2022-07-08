@@ -1,8 +1,7 @@
 // 2019/02/09 - created by Tsung-Wei Huang
 //  - modified the event count from Eigen
 
-#ifndef TASKFLOW_NOTIFIER_H
-#define TASKFLOW_NOTIFIER_H
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -266,4 +265,3 @@ class Notifier {
 
 }  // namespace tf ------------------------------------------------------------
 
-#endif // TASKFLOW_NOTIFIER_H

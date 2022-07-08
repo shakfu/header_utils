@@ -1,8 +1,5 @@
 // 2020/08/28 - Created by netcan: https://github.com/netcan
-
-#ifndef TASKFLOW_DSL_CONNECTION_H
-#define TASKFLOW_DSL_CONNECTION_H
-
+#pragma once
 #include "../core/flow_builder.hpp"
 #include "task_trait.hpp"
 #include "tuple_utils.hpp"
@@ -54,6 +51,3 @@ template <typename FROM, typename TO> struct OneToOneLink {
 };
 } // namespace dsl
 }; // namespace tf
-
-
-#endif // TASKFLOW_DSL_CONNECTION_H

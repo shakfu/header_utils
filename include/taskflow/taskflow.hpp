@@ -1,6 +1,5 @@
-
-#ifndef TASKFLOW_H
-#define TASKFLOW_H
+#ifndef TASKFLOW_TASKFLOW_HPP
+#define TASKFLOW_TASKFLOW_HPP
 
 #include <taskflow/core/executor.hpp>
 #include <taskflow/algorithm/critical.hpp>
@@ -19,6 +18,11 @@
 /**
 @dir taskflow/algorithm
 @brief taskflow algorithms include dir
+*/
+
+/**
+@dir taskflow/cuda
+@brief taskflow CUDA include dir
 */
 
 /**
@@ -61,7 +65,7 @@ constexpr const char* version() {
 }  // end of namespace tf -----------------------------------------------------
 
 
-#endif // TASKFLOW_H
 
 
 
+#endif // TASKFLOW_TASKFLOW_HPP

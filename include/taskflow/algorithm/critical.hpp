@@ -1,5 +1,5 @@
-#ifndef TASKFLOW_ALGO_CRITICAL_H
-#define TASKFLOW_ALGO_CRITICAL_H
+#ifndef TASKFLOW_ALGORITHM_CRITICAL_HPP
+#define TASKFLOW_ALGORITHM_CRITICAL_HPP
 
 #include <taskflow/core/task.hpp>
 
@@ -76,4 +76,5 @@ void CriticalSection::add(Tasks... tasks) {
 
 }  // end of namespace tf. ---------------------------------------------------
 
-#endif // TASKFLOW_ALGO_CRITICAL_H
+
+#endif // TASKFLOW_ALGORITHM_CRITICAL_HPP

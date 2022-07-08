@@ -1,5 +1,5 @@
-#ifndef TASKFLOW_TOPOLOGY_H
-#define TASKFLOW_TOPOLOGY_H
+#ifndef TASKFLOW_CORE_TOPOLOGY_HPP
+#define TASKFLOW_CORE_TOPOLOGY_HPP
 
 namespace tf {
 
@@ -61,7 +61,4 @@ Topology::Topology(Taskflow& tf, P&& p, C&& c):
 }
 
 }  // end of namespace tf. ----------------------------------------------------
-
-
-#endif // TASKFLOW_TOPOLOGY_H
-
+#endif // TASKFLOW_CORE_TOPOLOGY_HPP

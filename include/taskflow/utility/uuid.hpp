@@ -1,5 +1,5 @@
-#ifndef TASKFLOW_UTIL_UUID_H
-#define TASKFLOW_UTIL_UUID_H
+#ifndef TASKFLOW_UTILITY_UUID_HPP
+#define TASKFLOW_UTILITY_UUID_HPP
 
 #include <iostream>
 #include <string>
@@ -233,5 +233,5 @@ struct hash<tf::UUID> {
 
 }  // End of namespace std. ---------------------------------------------------
 
-#endif // TASKFLOW_UTIL_UUID_H
 
+#endif // TASKFLOW_UTILITY_UUID_HPP

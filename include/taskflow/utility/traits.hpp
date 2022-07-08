@@ -1,5 +1,5 @@
-#ifndef TASKFLOW_UTIL_TRAITS_H
-#define TASKFLOW_UTIL_TRAITS_H
+#ifndef TASKFLOW_UTILITY_TRAITS_HPP
+#define TASKFLOW_UTILITY_TRAITS_HPP
 
 #include <type_traits>
 #include <iterator>
@@ -221,5 +221,6 @@ void visit_tuple(Func func, Tuple& tup, size_t idx) {
 
 }  // end of namespace tf. ----------------------------------------------------
 
-#endif // TASKFLOW_UTIL_TRAITS_H
 
+
+#endif // TASKFLOW_UTILITY_TRAITS_HPP

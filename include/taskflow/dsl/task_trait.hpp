@@ -1,8 +1,6 @@
 // 2020/08/28 - Created by netcan: https://github.com/netcan
-
-#ifndef TASKFLOW_DSL_TASK_TRAIT_H
-#define TASKFLOW_DSL_TASK_TRAIT_H
-
+#ifndef TASKFLOW_DSL_TASK_TRAIT_HPP
+#define TASKFLOW_DSL_TASK_TRAIT_HPP
 #include <taskflow/core/flow_builder.hpp>
 #include <taskflow/core/task.hpp>
 #include <taskflow/dsl/type_list.hpp>
@@ -47,6 +45,4 @@ template <typename... TASK> struct TaskTrait<SomeTask<TASK...>> {
 };
 } // namespace dsl
 } // namespace tf
-
-#endif // TASKFLOW_DSL_TASK_TRAIT_H
-
+#endif // TASKFLOW_DSL_TASK_TRAIT_HPP

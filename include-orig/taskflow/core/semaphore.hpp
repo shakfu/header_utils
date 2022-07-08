@@ -1,5 +1,4 @@
-#ifndef TASKFLOW_SEMAPHORE_H
-#define TASKFLOW_SEMAPHORE_H
+#pragma once
 
 #include <vector>
 #include <mutex>
@@ -131,4 +130,3 @@ inline size_t Semaphore::count() const {
 
 }  // end of namespace tf. ---------------------------------------------------
 
-#endif // TASKFLOW_SEMAPHORE_H

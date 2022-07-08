@@ -1,5 +1,5 @@
-#ifndef TASKFLOW_ALGO_TRANSFORM_H
-#define TASKFLOW_ALGO_TRANSFORM_H
+#ifndef TASKFLOW_ALGORITHM_TRANSFORM_HPP
+#define TASKFLOW_ALGORITHM_TRANSFORM_HPP
 
 #include <taskflow/core/executor.hpp>
 
@@ -215,4 +215,4 @@ Task FlowBuilder::transform(B1 first1, E1 last1, B2 first2, O d_first, C c) {
 
 
 
-#endif // TASKFLOW_ALGO_TRANSFORM_H
+#endif // TASKFLOW_ALGORITHM_TRANSFORM_HPP

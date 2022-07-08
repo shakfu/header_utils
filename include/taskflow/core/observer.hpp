@@ -1,5 +1,5 @@
-#ifndef TASKFLOW_OBSERVER_H
-#define TASKFLOW_OBSERVER_H
+#ifndef TASKFLOW_CORE_OBSERVER_HPP
+#define TASKFLOW_CORE_OBSERVER_HPP
 
 #include <taskflow/core/task.hpp>
 #include <taskflow/core/worker.hpp>
@@ -738,5 +738,5 @@ inline const char* to_string(ObserverType type) {
 
 }  // end of namespace tf -----------------------------------------------------
 
-#endif // TASKFLOW_OBSERVER_H
 
+#endif // TASKFLOW_CORE_OBSERVER_HPP

@@ -1,5 +1,5 @@
-#ifndef TASKFLOW_UTIL_MATH_H
-#define TASKFLOW_UTIL_MATH_H
+#ifndef TASKFLOW_UTILITY_MATH_HPP
+#define TASKFLOW_UTILITY_MATH_HPP
 
 #include <atomic>
 
@@ -124,6 +124,6 @@ T unique_id() {
 
 }  // end of namespace tf -----------------------------------------------------
 
-#endif // TASKFLOW_UTIL_MATH_H
 
 
+#endif // TASKFLOW_UTILITY_MATH_HPP

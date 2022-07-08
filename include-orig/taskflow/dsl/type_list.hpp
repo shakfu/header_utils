@@ -1,8 +1,5 @@
 // 2020/08/28 - Created by netcan: https://github.com/netcan
-
-#ifndef TASKFLOW_DSL_TYPE_LIST_H
-#define TASKFLOW_DSL_TYPE_LIST_H
-
+#pragma once
 #include <cstddef>
 
 namespace tf {
@@ -137,7 +134,3 @@ public:
 };
 } // namespace dsl
 } // namespace tf
-
-
-#endif // TASKFLOW_DSL_TYPE_LIST_H
-

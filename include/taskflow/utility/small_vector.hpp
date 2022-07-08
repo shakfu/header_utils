@@ -1,7 +1,7 @@
 // small vector modified from llvm
 
-#ifndef TASKFLOW_UTIL_SMALL_VEECTOR_H
-#define TASKFLOW_UTIL_SMALL_VEECTOR_H
+#ifndef TASKFLOW_UTILITY_SMALL_VECTOR_HPP
+#define TASKFLOW_UTILITY_SMALL_VECTOR_HPP
 
 #include <algorithm>
 #include <cassert>
@@ -1038,6 +1038,5 @@ namespace std {
   }
 }  // end of namespace std ----------------------------------------------------
 
-#endif // TASKFLOW_UTIL_SMALL_VEECTOR_H
 
-
+#endif // TASKFLOW_UTILITY_SMALL_VECTOR_HPP

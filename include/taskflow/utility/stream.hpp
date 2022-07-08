@@ -1,5 +1,5 @@
-#ifndef TASKFLOW_UTIL_STREAM_H
-#define TASKFLOW_UTIL_STREAM_H
+#ifndef TASKFLOW_UTILITY_STREAM_HPP
+#define TASKFLOW_UTILITY_STREAM_HPP
 
 #include <iostream>
 #include <string>
@@ -30,5 +30,4 @@ std::string stringify(ArgsT&&... args) {
 
 }  // end of namespace tf -----------------------------------------------------
 
-
-#endif // TASKFLOW_UTIL_STREAM_H
+#endif // TASKFLOW_UTILITY_STREAM_HPP

@@ -74,7 +74,49 @@ def normalize_include_statement(line, include):
     raise ValueError
 
 
-def normalize_header(lines): pass
+def normalize_header_include_statements(lines, include):
+    _result = []
+    for line in lines:
+        if line.startswith("#include "):
+            if line.endswith('"\n'):
+                line = line.strip()
+                converted = normalize_include_statement(line, include)
+                _result.append(converted)
+                print("  ", shorten(line), "->", shorten(converted.strip()))
+                continue
+        _result.append(line)
+    return _result
+
+
+def normalize_header_guards(lines, include):
+    _results = []
+    name = include.\
+        lstrip("include/").\
+        replace("/", "_").\
+        replace(".", "_").\
+        upper()
+    for line in lines:
+        if line.startswith("#pragma once"):
+            line = line.strip()
+            replacement = f"#ifndef {name}\n"
+            _results.append(replacement)
+            define = f"#define {name}\n"
+            _results.append(define)
+            print(replacement, define)
+            continue
+        _results.append(line)
+    _results.append(f"#endif // {name}\n")
+    return _results
+
+
+def transform(lines, include):
+    _transformers = [
+        normalize_header_include_statements,
+        normalize_header_guards,
+    ]
+    for transformer in _transformers:
+        lines = transformer(lines, include)
+    return lines
 
 
 def normalize_headers(path, dry_run=False):
@@ -89,17 +131,7 @@ def normalize_headers(path, dry_run=False):
         print(include.lstrip("include/"))
         with open(include, encoding="utf-8") as fopen:
             lines = fopen.readlines()
-        _result = []
-        for line in lines:
-            if line.startswith("#include "):
-                if line.endswith('"\n'):
-                    line = line.strip()
-                    converted = normalize_include_statement(line, include)
-                    _result.append(converted)
-                    print("  ", shorten(line), "->", shorten(converted.strip()))
-                    continue
-
-            _result.append(line)
+        _result = transform(lines, include)
         if not dry_run:
             with open(include, "w", encoding="utf-8") as fwrite:
                 fwrite.writelines(_result)
