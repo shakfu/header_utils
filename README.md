@@ -10,7 +10,7 @@ repo: <https://github.com/shakfu/header_utils>
 usage: header_utils.py [-h] [--dry-run] [--backup] [--list] [--graph GRAPH]
                        path
 
-Convert include stmts to pointy braces and absolute paths.
+Convert headers to a binder friendly format.
 
 positional arguments:
   path                  path to include directory
@@ -52,21 +52,21 @@ brew install graphviz
 
 - [x] quotes to pointy brackets
 
-  ```c++
-  #include "parent/abc.h" -> <parent/abc.h>
-  ```
+```c++
+#include "parent/abc.h" -> <parent/abc.h>
+```
 
 - [x] relative to absolute include path references
 
-  ```c++
-  #include "../abc.h" -> <parent/abc.h>
-  ```
+```c++
+#include "../abc.h" -> <parent/abc.h>
+```
 
 - [x] pragma once to header guards
 
-  ```c++
-  #pragma once
-  ```
+```c++
+#pragma once
+```
 
 becomes
 
