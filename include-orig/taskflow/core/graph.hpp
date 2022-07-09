@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TASKFLOW_GRAPH_H
+#define TASKFLOW_GRAPH_H
 
 #include "../utility/iterator.hpp"
 #include "../utility/object_pool.hpp"
@@ -357,28 +358,6 @@ class Node {
     std::function<void()> work;
   };
 
-  // cudaFlow work handle
-  struct cudaFlow {
-
-    template <typename C, typename G>
-    cudaFlow(C&& c, G&& g);
-
-    std::function<void(Executor&, Node*)> work;
-
-    std::unique_ptr<CustomGraphBase> graph;
-  };
-
-  // syclFlow work handle
-  struct syclFlow {
-
-    template <typename C, typename G>
-    syclFlow(C&& c, G&& g);
-
-    std::function<void(Executor&, Node*)> work;
-
-    std::unique_ptr<CustomGraphBase> graph;
-  };
-
   using handle_t = std::variant<
     std::monostate,  // placeholder
     Static,          // static tasking
@@ -388,8 +367,6 @@ class Node {
     Module,          // composable tasking
     Async,           // async tasking
     SilentAsync,     // async tasking (no future)
-    cudaFlow,        // cudaFlow
-    syclFlow,        // syclFlow
     Runtime          // runtime tasking
   >;
 
@@ -409,8 +386,6 @@ class Node {
   constexpr static auto MODULE          = get_index_v<Module, handle_t>;
   constexpr static auto ASYNC           = get_index_v<Async, handle_t>;
   constexpr static auto SILENT_ASYNC    = get_index_v<SilentAsync, handle_t>;
-  constexpr static auto CUDAFLOW        = get_index_v<cudaFlow, handle_t>;
-  constexpr static auto SYCLFLOW        = get_index_v<syclFlow, handle_t>;
   constexpr static auto RUNTIME         = get_index_v<Runtime, handle_t>;
 
   template <typename... Args>
@@ -498,26 +473,6 @@ Node::Condition::Condition(C&& c) : work {std::forward<C>(c)} {
 // Constructor
 template <typename C>
 Node::MultiCondition::MultiCondition(C&& c) : work {std::forward<C>(c)} {
-}
-
-// ----------------------------------------------------------------------------
-// Definition for Node::cudaFlow
-// ----------------------------------------------------------------------------
-
-template <typename C, typename G>
-Node::cudaFlow::cudaFlow(C&& c, G&& g) :
-  work  {std::forward<C>(c)},
-  graph {std::forward<G>(g)} {
-}
-
-// ----------------------------------------------------------------------------
-// Definition for Node::syclFlow
-// ----------------------------------------------------------------------------
-
-template <typename C, typename G>
-Node::syclFlow::syclFlow(C&& c, G&& g) :
-  work  {std::forward<C>(c)},
-  graph {std::forward<G>(g)} {
 }
 
 // ----------------------------------------------------------------------------
@@ -807,3 +762,5 @@ inline Node* Graph::_emplace_back() {
 
 
 }  // end of namespace tf. ---------------------------------------------------
+
+#endif // TASKFLOW_GRAPH_H

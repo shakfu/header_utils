@@ -1,5 +1,10 @@
 // 2020/08/28 - Created by netcan: https://github.com/netcan
-#pragma once
+
+
+#ifndef TASKFLOW_DSL_TASK_DSL_H
+#define TASKFLOW_DSL_TASK_DSL_H
+
+
 #include "../core/flow_builder.hpp"
 #include "meta_macro.hpp"
 #include "task_analyzer.hpp"
@@ -101,4 +106,6 @@ constexpr TaskDsl<CONTEXT, Chains...> taskDsl(FlowBuilder &flow_builder,
 #define task(Task) auto (*)(Task)
 // taskbuild(...) build a task dsl graph
 #define build_taskflow(...) tf::dsl::taskDsl<void TF_MAP(TF_CHAIN, __VA_ARGS__)>
+
+#endif // TASKFLOW_DSL_TASK_DSL_H
 

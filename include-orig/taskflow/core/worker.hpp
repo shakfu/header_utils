@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TASKFLOW_WORKER_H
+#define TASKFLOW_WORKER_H
 
 #include "declarations.hpp"
 #include "tsq.hpp"
@@ -236,4 +237,5 @@ class WorkerInterface {
 
 }  // end of namespact tf -----------------------------------------------------
 
+#endif // TASKFLOW_WORKER_H
 

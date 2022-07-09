@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TASKFLOW_UTIL_SINGLETON_H
+#define TASKFLOW_UTIL_SINGLETON_H
 
 namespace tf {
 
@@ -31,3 +32,5 @@ class Singleton {
 
 
 }  // end of namespace tf -----------------------------------------------------
+
+#endif // TASKFLOW_UTIL_SINGLETON_H

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TASKFLOW_ALGO_SORT_H
+#define TASKFLOW_ALGO_SORT_H
 
 #include "../core/executor.hpp"
 
@@ -472,3 +473,4 @@ Task FlowBuilder::sort(B beg, E end) {
 
 }  // namespace tf ------------------------------------------------------------
 
+#endif // TASKFLOW_ALGO_SORT_H

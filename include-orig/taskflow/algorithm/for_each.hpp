@@ -2,7 +2,8 @@
 // - gomp: https://github.com/gcc-mirror/gcc/blob/master/libgomp/iter.c
 // - komp: https://github.com/llvm-mirror/openmp/blob/master/runtime/src/kmp_dispatch.cpp
 
-#pragma once
+#ifndef TASKFLOW_ALGO_FOREACH_H
+#define TASKFLOW_ALGO_FOREACH_H
 
 #include "../core/executor.hpp"
 
@@ -201,5 +202,6 @@ Task FlowBuilder::for_each_index(B beg, E end, S inc, C c){
 
 }  // end of namespace tf -----------------------------------------------------
 
+#endif // TASKFLOW_ALGO_FOREACH_H
 
 

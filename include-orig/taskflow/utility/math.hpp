@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TASKFLOW_UTIL_MATH_H
+#define TASKFLOW_UTIL_MATH_H
 
 #include <atomic>
 
@@ -123,5 +124,6 @@ T unique_id() {
 
 }  // end of namespace tf -----------------------------------------------------
 
+#endif // TASKFLOW_UTIL_MATH_H
 
 

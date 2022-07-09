@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TASKFLOW_ALGO_REDUCE_H
+#define TASKFLOW_ALGO_REDUCE_H
 
 #include "../core/executor.hpp"
 
@@ -258,5 +259,5 @@ Task FlowBuilder::transform_reduce(
 }  // end of namespace tf -----------------------------------------------------
 
 
-
+#endif // TASKFLOW_ALGO_REDUCE_H
 

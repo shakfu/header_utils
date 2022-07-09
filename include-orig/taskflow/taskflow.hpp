@@ -1,4 +1,6 @@
-#pragma once
+
+#ifndef TASKFLOW_H
+#define TASKFLOW_H
 
 #include "core/executor.hpp"
 #include "algorithm/critical.hpp"
@@ -17,11 +19,6 @@
 /**
 @dir taskflow/algorithm
 @brief taskflow algorithms include dir
-*/
-
-/**
-@dir taskflow/cuda
-@brief taskflow CUDA include dir
 */
 
 /**
@@ -64,6 +61,7 @@ constexpr const char* version() {
 }  // end of namespace tf -----------------------------------------------------
 
 
+#endif // TASKFLOW_H
 
 
 

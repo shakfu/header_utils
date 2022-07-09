@@ -1,6 +1,7 @@
 // small vector modified from llvm
 
-#pragma once
+#ifndef TASKFLOW_UTIL_SMALL_VEECTOR_H
+#define TASKFLOW_UTIL_SMALL_VEECTOR_H
 
 #include <algorithm>
 #include <cassert>
@@ -1036,5 +1037,7 @@ namespace std {
     LHS.swap(RHS);
   }
 }  // end of namespace std ----------------------------------------------------
+
+#endif // TASKFLOW_UTIL_SMALL_VEECTOR_H
 
 

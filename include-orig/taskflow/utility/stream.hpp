@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TASKFLOW_UTIL_STREAM_H
+#define TASKFLOW_UTIL_STREAM_H
 
 #include <iostream>
 #include <string>
@@ -29,3 +30,5 @@ std::string stringify(ArgsT&&... args) {
 
 }  // end of namespace tf -----------------------------------------------------
 
+
+#endif // TASKFLOW_UTIL_STREAM_H

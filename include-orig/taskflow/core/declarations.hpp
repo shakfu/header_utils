@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TASKFLOW_DECLARATIONS_H
+#define TASKFLOW_DECLARATIONS_H
 
 namespace tf {
 
@@ -31,31 +32,8 @@ class Future;
 template <typename...Fs>
 class Pipeline;
 
-// ----------------------------------------------------------------------------
-// cudaFlow
-// ----------------------------------------------------------------------------
-class cudaNode;
-class cudaGraph;
-class cudaTask;
-class cudaFlow;
-class cudaFlowCapturer;
-class cudaFlowCapturerBase;
-class cudaCapturingBase;
-class cudaLinearCapturing;
-class cudaSequentialCapturing;
-class cudaRoundRobinCapturing;
-
-// ----------------------------------------------------------------------------
-// syclFlow
-// ----------------------------------------------------------------------------
-class syclNode;
-class syclGraph;
-class syclTask;
-class syclFlow;
-
-
 }  // end of namespace tf -----------------------------------------------------
 
 
-
+#endif // TASKFLOW_DECLARATIONS_H
 

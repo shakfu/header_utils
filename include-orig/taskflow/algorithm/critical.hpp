@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TASKFLOW_ALGO_CRITICAL_H
+#define TASKFLOW_ALGO_CRITICAL_H
 
 #include "../core/task.hpp"
 
@@ -75,4 +76,4 @@ void CriticalSection::add(Tasks... tasks) {
 
 }  // end of namespace tf. ---------------------------------------------------
 
-
+#endif // TASKFLOW_ALGO_CRITICAL_H

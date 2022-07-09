@@ -3,11 +3,16 @@
 //
 // Created by netcan: https://github.com/netcan
 
-#pragma once
+#ifndef TASKFLOW_DSL_DSL_H
+#define TASKFLOW_DSL_DSL_H
 
-#include "dsl/task_dsl.hpp"
+//#include "dsl/task_dsl.hpp"
+#include "task_dsl.hpp"
 
 namespace tf {
 
 
 }  // end of namespace tf -----------------------------------------------------
+
+
+#endif // TASKFLOW_DSL_DSL_H

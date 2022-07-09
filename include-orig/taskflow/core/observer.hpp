@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TASKFLOW_OBSERVER_H
+#define TASKFLOW_OBSERVER_H
 
 #include "task.hpp"
 #include "worker.hpp"
@@ -737,4 +738,5 @@ inline const char* to_string(ObserverType type) {
 
 }  // end of namespace tf -----------------------------------------------------
 
+#endif // TASKFLOW_OBSERVER_H
 

@@ -10,7 +10,8 @@
 // 2019/06/13 - created by Tsung-Wei Huang
 //  - implemented an object pool class
 
-#pragma once
+#ifndef TASKFLOW_UTIL_POOL_H
+#define TASKFLOW_UTIL_POOL_H
 
 #include <thread>
 #include <atomic>
@@ -776,3 +777,5 @@ constexpr unsigned ObjectPool<T, S>::_next_pow2(unsigned n) const {
 }
 
 }  // end namespace tf --------------------------------------------------------
+
+#endif // TASKFLOW_UTIL_POOL_H

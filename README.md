@@ -25,14 +25,15 @@ repo: <https://github.com/shakfu/norm_headers>
 3. [ ] pragma once to header guards
 
 ```
-#pragma once ->
-
+#pragma once
+	|
+	V
 #ifndef ABC_H
 #define ABC_H
 
 ...
 
-#endif
+#endif // ABC_H
 
 ```
 
