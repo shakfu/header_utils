@@ -1,12 +1,12 @@
 # header_utils.py
 
-Convert headers to a [binder]https://github.com/RosettaCommons/binder) friendly format.
+Convert headers to a [binder]<https://github.com/RosettaCommons/binder>) friendly format.
 
 repo: <https://github.com/shakfu/header_utils>
 
 ## Usage
 
-```
+```text
 usage: header_utils.py [-h] [--dry-run] [--backup] [--list] [--graph GRAPH]
                        path
 
@@ -48,29 +48,29 @@ and graphviz to be installed on your system. On macOS for example:
 brew install graphviz
 ```
 
-
 ### List of Transformations
 
+- [x] quotes to pointy brackets
 
-1. [x] quotes to pointy brackets
+  ```c++
+  #include "parent/abc.h" -> <parent/abc.h>
+  ```
 
-```
-#include "parent/abc.h" -> <parent/abc.h>
-```
+- [x] relative to absolute include path references
 
-2. [x] relative to absolute include path references
+  ```c++
+  #include "../abc.h" -> <parent/abc.h>
+  ```
 
-```
-#include "../abc.h" -> <parent/abc.h>
-```
+- [x] pragma once to header guards
 
-3. [x] pragma once to header guards
+  ```c++
+  #pragma once
+  ```
 
-```
-#pragma once
-```
 becomes
-```
+
+```c++
 #ifndef ABC_H
 #define ABC_H
 
