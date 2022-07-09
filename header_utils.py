@@ -183,7 +183,7 @@ class HeaderProcessor:
     def commandline(cls):
         """commmandline api"""
         parser = argparse.ArgumentParser(
-            description="Convert include stmts to pointy braces and absolute paths."
+            description="Convert headers to a binder friendly format."
         )
 
         parser.add_argument("path", help="path to include directory")
