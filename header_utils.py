@@ -7,18 +7,17 @@ Provide a class to recursively process header declarations for binder
 see repo: <https://github.com/shakfu/norm_headers>
 
 """
+import argparse
 import os
 import re
-import argparse
 import shutil
-# from typing import Type, Optional
+
 
 try:
     import graphviz
-
-    HAS_GRAPHVIZ = True
+    HAVE_GRAPHVIZ = True
 except ImportError:
-    HAS_GRAPHVIZ = False
+    HAVE_GRAPHVIZ = False
 
 
 class HeaderProcessor:
@@ -41,11 +40,11 @@ class HeaderProcessor:
         self.path = path
         self.dry_run = dry_run
         self.backup = backup
-        if HAS_GRAPHVIZ:
+        if HAVE_GRAPHVIZ:
             self.graph = graphviz.Digraph('dependencies', comment="Header References")
 
     def get_headers(self, sort: bool = False) -> list[str]:
-        """get all header files recursively
+        """recursively get all header files 
 
         Can be sorted optionally.
         """
@@ -58,6 +57,17 @@ class HeaderProcessor:
         if sort:
             return sorted(results)
         return results
+
+    def get_include_statements(self) -> list[str]:
+        """recursively get all include statements"""
+        _results = []
+        for header in self.get_headers():
+            with open(header, encoding="utf-8") as fopen:
+                lines = fopen.readlines()
+                for line in lines:
+                    if line.startswith('#include '):
+                        _results.append(line.strip())
+        return _results
 
     def mk_absolute_include(self, base_path: str, relative_path: str):
         """converts relative path to absolute path"""
@@ -90,7 +100,7 @@ class HeaderProcessor:
                     )
                     _result.append(abs_include)
                     print("  ", _shorten(line), "->", _shorten(abs_include.strip()))
-                    if HAS_GRAPHVIZ:
+                    if HAVE_GRAPHVIZ:
                         self.add_reference(base_path, abs_ref)
                     continue
             _result.append(line)
@@ -140,13 +150,20 @@ class HeaderProcessor:
             lines = getattr(self, transformer)(lines, base_path)
         return lines
 
+    def get_base_path(self, header_path):
+        """retrieves base path, or the path which follows `self.path`"""
+        path = self.path
+        if not path.endswith('/'):
+            path = f"{path}/"
+        return header_path[len(path):]
+
     def process_headers(self):
         """process headers from path recursively"""
         if self.backup:
             shutil.copytree(self.path, f"{self.path}__BACKUP")
         headers = self.get_headers(self.path)
         for header_path in headers:
-            base_path = header_path.lstrip("include/")
+            base_path = self.get_base_path(header_path)
             print(base_path)            
             with open(header_path, encoding="utf-8") as fopen:
                 lines = fopen.readlines()
