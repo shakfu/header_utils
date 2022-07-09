@@ -1,6 +1,6 @@
 # header_utils.py
 
-Convert headers to a [binder]<https://github.com/RosettaCommons/binder>) friendly format.
+Convert headers to a [binder](https://github.com/RosettaCommons/binder>) friendly format.
 
 repo: <https://github.com/shakfu/header_utils>
 
