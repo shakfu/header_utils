@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
+"""header_utils.py
 
-# normalize_header.py
-"""
 Provide a class to recursively process header declarations for binder
 
 see repo: <https://github.com/shakfu/norm_headers>
@@ -24,11 +23,11 @@ class HeaderProcessor:
     """Recursively processes header declarations for binder
 
     This is done via a pipeline of transformers:
-        - change_quotes_to_pointy_brackets
-        - change_pragma_one_to_header_guards
-        - change_relative_to_absolute_header_references
+        -> change_quotes_to_pointy_brackets
+        -> change_pragma_one_to_header_guards
+        -> change_relative_to_absolute_header_references
 
-    Also provides optional analyzers:
+    Also provides for optionally
         - generate graph of header references in dot format
 
     see repo: <https://github.com/shakfu/norm_headers>
@@ -133,7 +132,6 @@ class HeaderProcessor:
                 _results.append(replacement)
                 define = f"#define {name}\n"
                 _results.append(define)
-                # print(replacement, define)
                 print('#pragma once -> guarded headers')
                 continue
             _results.append(line)
@@ -161,7 +159,7 @@ class HeaderProcessor:
         """process headers from path recursively"""
         if self.backup:
             shutil.copytree(self.path, f"{self.path}__BACKUP")
-        headers = self.get_headers(self.path)
+        headers = self.get_headers()
         for header_path in headers:
             base_path = self.get_base_path(header_path)
             print(base_path)            
@@ -175,7 +173,7 @@ class HeaderProcessor:
 
     def list_target_headers(self):
         """recursively list all headers"""
-        headers = self.get_headers(self.path)
+        headers = self.get_headers()
         for header_path in headers:
             print(header_path)
 
