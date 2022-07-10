@@ -1,9 +1,20 @@
 #!/usr/bin/env python3
 """header_utils.py
 
-Provides a utility class to recursively process header declarations for binder
+Provides `HeaderProcessor`, a utility class to recursively process header
+declarations for [binder](https://github.com/RosettaCommons/binder).
 
 see repo: <https://github.com/shakfu/header_utils>
+
+Default header transformations:
+    -> change_quotes_to_pointy_brackets
+    -> change_relative_to_absolute_header_references
+
+Optional header transformations
+    -> change_pragma_one_to_header_guards
+
+Additional Features:
+    - generate graph of header references in [png|svg|pdf|dot] format
 
 """
 import argparse
@@ -44,8 +55,8 @@ class HeaderProcessor:
     def __init__(
         self,
         path: str,
-        output_dir: str = None,
-        header_endings: list[str] = None,
+        output_dir: str = None,  # type: ignore
+        header_endings: list[str] = None,  # type: ignore
         header_guards: bool = False,
         dry_run: bool = False,
         skip_backup: bool = False,
@@ -102,10 +113,6 @@ class HeaderProcessor:
                 base_parts.append(part)
         return "/".join(base_parts)
 
-    def add_graph_edge(self, base_path: str, abs_ref: str):
-        """adds an edge to the internal graphviz graph"""
-        self.graph.edge(base_path, abs_ref)
-
     def normalize_header_include_statements(self, lines: list[str], base_path: str):
         """convert quotes to pointy brackets in an an include statement"""
         _shorten = lambda s: s.lstrip("#include ")
@@ -120,7 +127,7 @@ class HeaderProcessor:
                     _result.append(abs_include)
                     print("  ", _shorten(line), "->", _shorten(abs_include.strip()))
                     if HAVE_GRAPHVIZ and self.graph:
-                        self.add_graph_edge(base_path, abs_ref)
+                        self.graph.edge(base_path, abs_ref)
                     continue
             _result.append(line)
         return _result
@@ -272,7 +279,7 @@ class HeaderProcessor:
                 app.list_target_headers()
             else:
                 app.process_headers()
-                if args.graph:
+                if args.graph and app.graph:
                     app.graph.render(outfile=args.graph)
 
 

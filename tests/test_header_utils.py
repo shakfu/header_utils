@@ -364,13 +364,15 @@ def test_process_headers():
         shutil.rmtree(target)
     shutil.copytree(test_headers, target)
 
-    # ensure before state
+    # assert 'before-changes' state is the same
     before = HeaderProcessor(path='tests/include-before')
     assert before.get_include_statements() == BEFORE
 
     # process headers
     after = HeaderProcessor(path=target, skip_backup=True)
     after.process_headers()
+
+    # assert 'post-changes' state is as required
     assert after.get_include_statements() == AFTER
 
     # cleanup

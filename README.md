@@ -4,46 +4,27 @@ Convert headers to a [binder](https://github.com/RosettaCommons/binder>) friendl
 
 repo: <https://github.com/shakfu/header_utils>
 
-
 ## Features
 
-Header Transformations
+### Header Transformations
 
-- Quotes to pointy brackets
-- Relative to absolute include path references
-- Pragma once to header guards
+Default
 
-Analysis
-
-- Generate graphviz (pdf|png|svg) graph of header dependencies.
-
-This requires:
-
-```bash
-pip install graphviz
-```
-
-and graphviz to be installed on your system. On macOS for example:
-
-```bash
-brew install graphviz
-```
-
-### List of Transformations
-
-- [x] quotes to pointy brackets
+- Convert include quotes to pointy brackets
 
 ```c++
 #include "parent/abc.h" -> <parent/abc.h>
 ```
 
-- [x] relative to absolute include path references
+- Convert relative to absolute include path references
 
 ```c++
 #include "../abc.h" -> <parent/abc.h>
 ```
 
-- [x] pragma once to header guards
+Optional
+
+- Convert `#pragma once` to header guards
 
 ```c++
 #pragma once
@@ -61,30 +42,43 @@ becomes
 
 ```
 
+### Dependency Analysis
+
+- Generate graphviz (pdf|png|svg) graph of header dependencies.
+
+This requires:
+
+```bash
+pip install graphviz
+```
+
+and graphviz to be installed on your system. On macOS for example:
+
+```bash
+brew install graphviz
+```
 
 ## Usage
 
 Here are some usage examples (full commandline api is provided below):
 
-- Run `header_utils`'s default transformations in `dry-run` mode which will not make any changes. In this case, you can see what changes will occur to each `#include` statement in each file in the provided directory. 
+- Run `header_utils`'s default transformations in `dry-run` mode which will not make any changes. In this case, you can see what changes will occur to each `#include` statement in each file in the provided directory.
 
-```
-$ ./header_utils.py --dry-run include
+```bash
+./header_utils.py --dry-run include
 ```
 
 - Provide an `output-dir` to `header_utils`. In this mode, default transformations will be applied to headers in the `output-dir`. Specifying a `graph` path with `.pdf` suffix will have `header_utils` generate a pdf graph (and dot file) of header-file dependencies using graphviz.
 
-
-```
-$ ./header_utils.py --output-dir=include-mod --graph=depends.pdf include
+```bash
+./header_utils.py --output-dir=include-mod --graph=depends.pdf include
 ```
 
 - Run `header_utils`'s default transformations in `in-place` mode which **will** make changes directly to the provided directory. An automatic time-stamped backup will be made in this case. Only headers with an `.hpp` suffix will be modified as opposed to any of the default ['.h', '.hpp', '.hh']
 
+```bash
+./header_utils.py --header-endings .hpp include
 ```
-$ ./header_utils.py --header-endings .hpp include
-```
-
 
 ## Commandline API
 
@@ -116,4 +110,3 @@ optional arguments:
                         output path for graphviz graph with format suffix
                         [png|pdf|svg] (default: None)
 ```
-
