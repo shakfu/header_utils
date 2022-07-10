@@ -10,13 +10,13 @@ repo: <https://github.com/shakfu/header_utils>
 
 Default
 
-- Convert include quotes to pointy brackets
+- Convert include statements with quotes to pointy brackets.
 
 ```c++
 #include "parent/abc.h" -> <parent/abc.h>
 ```
 
-- Convert relative to absolute include path references
+- Convert relative to absolute include path references.
 
 ```c++
 #include "../abc.h" -> <parent/abc.h>
@@ -24,7 +24,7 @@ Default
 
 Optional
 
-- Convert `#pragma once` to header guards
+- Convert `#pragma once` entries to header guards.
 
 ```c++
 #pragma once
@@ -44,7 +44,7 @@ becomes
 
 ### Dependency Analysis
 
-- Generate graphviz (pdf|png|svg) graph of header dependencies.
+- Generate a graphviz (pdf|png|svg) graph of header dependencies.
 
 This requires:
 
@@ -60,25 +60,36 @@ brew install graphviz
 
 ## Usage
 
-Here are some usage examples (full commandline api is provided below):
-
-- Run `header_utils`'s default transformations in `dry-run` mode which will not make any changes. In this case, you can see what changes will occur to each `#include` statement in each file in the provided directory.
+A few usage examples (full commandline api is provided below):
 
 ```bash
 ./header_utils.py --dry-run include
 ```
 
-- Provide an `output-dir` to `header_utils`. In this mode, default transformations will be applied to headers in the `output-dir`. Specifying a `graph` path with `.pdf` suffix will have `header_utils` generate a pdf graph (and dot file) of header-file dependencies using graphviz.
+Apply default transformations in `dry-run` mode without making any changes.
 
 ```bash
-./header_utils.py --output-dir=include-mod --graph=depends.pdf include
+./header_utils.py --output-dir=include-mod include
 ```
 
-- Run `header_utils`'s default transformations in `in-place` mode which **will** make changes directly to the provided directory. An automatic time-stamped backup will be made in this case. Only headers with an `.hpp` suffix will be modified as opposed to any of the default ['.h', '.hpp', '.hh']
+Apply default transformations to headers copied to an `output-dir`. 
+
+
+```bash
+./header_utils.py --graph=depends.pdf include
+```
+
+Apply default transformations 'in-place' to headers in the `include` directory.
+and generate a pdf graph of header-file dependencies using graphviz.
+An automatic time-stamped backup will be made in this case. 
+
 
 ```bash
 ./header_utils.py --header-endings .hpp include
 ```
+
+Run `header_utils`'s default transformations in `in-place` mode. Only headers with an `.hpp` suffix will be modified as opposed to any with the default ['.h', '.hpp', '.hh'] endings.
+
 
 ## Commandline API
 
