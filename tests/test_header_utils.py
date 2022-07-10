@@ -369,7 +369,7 @@ def test_process_headers():
     assert before.get_include_statements() == BEFORE
 
     # process headers
-    after = HeaderProcessor(path=target)
+    after = HeaderProcessor(path=target, skip_backup=True)
     after.process_headers()
     assert after.get_include_statements() == AFTER
 

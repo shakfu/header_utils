@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
 """header_utils.py
 
-Provide a class to recursively process header declarations for binder
+Provides a utility class to recursively process header declarations for binder
 
-see repo: <https://github.com/shakfu/norm_headers>
+see repo: <https://github.com/shakfu/header_utils>
 
 """
 import argparse
 import os
 import re
 import shutil
+import time
+from typing import ClassVar
 
 
 try:
-    import graphviz
+    import graphviz  # type: ignore
+
     HAVE_GRAPHVIZ = True
 except ImportError:
     HAVE_GRAPHVIZ = False
@@ -24,34 +27,51 @@ class HeaderProcessor:
 
     This is done via a pipeline of transformers:
         -> change_quotes_to_pointy_brackets
-        -> change_pragma_one_to_header_guards
         -> change_relative_to_absolute_header_references
 
-    Also provides for optionally
-        - generate graph of header references in dot format
+        (optional transformers)
+        -> change_pragma_one_to_header_guards
 
-    see repo: <https://github.com/shakfu/norm_headers>
+        (optional analysis)
+        - generate graph of header references in [png|svg|pdf|dot] format
+
+    see repo: <https://github.com/shakfu/header_utils>
     """
 
-    PATTERN = re.compile(r"^#include \"(.+)\"")
+    PATTERN: ClassVar = re.compile(r"^#include \"(.+)\"")
+    DEFAULT_HEADER_ENDINGS: ClassVar[list[str]] = [".h", ".hpp", ".hh"]
 
-    def __init__(self, path: str, dry_run: bool = False, backup: bool = False):
+    def __init__(
+        self,
+        path: str,
+        output_dir: str = None,
+        header_endings: list[str] = None,
+        header_guards: bool = False,
+        dry_run: bool = False,
+        skip_backup: bool = False,
+    ):
         self.path = path
+        self.output_dir = output_dir
+        self.header_endings = (
+            header_endings if header_endings else self.DEFAULT_HEADER_ENDINGS
+        )
+        self.header_guards = header_guards
         self.dry_run = dry_run
-        self.backup = backup
+        self.skip_backup = skip_backup
         if HAVE_GRAPHVIZ:
-            self.graph = graphviz.Digraph('dependencies', comment="Header References")
+            self.graph = graphviz.Digraph("dependencies", comment="Header References")
+        else:
+            self.graph = None
 
     def get_headers(self, sort: bool = False) -> list[str]:
-        """recursively get all header files 
+        """recursively get all header files
 
         Can be sorted optionally.
         """
-        endings = [".h", ".hpp"]
         results = []
         for root, _, files in os.walk(self.path):
             for fname in files:
-                if any(fname.endswith(e) for e in endings):
+                if any(fname.endswith(e) for e in self.header_endings):
                     results.append(os.path.join(root, fname))
         if sort:
             return sorted(results)
@@ -64,7 +84,7 @@ class HeaderProcessor:
             with open(header, encoding="utf-8") as fopen:
                 lines = fopen.readlines()
                 for line in lines:
-                    if line.startswith('#include '):
+                    if line.startswith("#include "):
                         _results.append(line.strip())
         return _results
 
@@ -82,7 +102,7 @@ class HeaderProcessor:
                 base_parts.append(part)
         return "/".join(base_parts)
 
-    def add_reference(self, base_path: str, abs_ref: str):
+    def add_graph_edge(self, base_path: str, abs_ref: str):
         """adds an edge to the internal graphviz graph"""
         self.graph.edge(base_path, abs_ref)
 
@@ -99,8 +119,8 @@ class HeaderProcessor:
                     )
                     _result.append(abs_include)
                     print("  ", _shorten(line), "->", _shorten(abs_include.strip()))
-                    if HAVE_GRAPHVIZ:
-                        self.add_reference(base_path, abs_ref)
+                    if HAVE_GRAPHVIZ and self.graph:
+                        self.add_graph_edge(base_path, abs_ref)
                     continue
             _result.append(line)
         return _result
@@ -109,7 +129,7 @@ class HeaderProcessor:
         """normalize include statement
 
         converts:
-            "` to point braces
+            `"` to pointy braces
             relative to absolute paths
         """
         match = self.PATTERN.match(line)
@@ -120,11 +140,9 @@ class HeaderProcessor:
         raise ValueError
 
     def normalize_header_guards(self, lines: list[str], base_path: str):
-        """convert pragma once to guarded headers"""
+        """convert '#pragma once' to guarded headers"""
         _results = []
-        name = (
-            base_path.replace("/", "_").replace(".", "_").upper()
-        )
+        name = base_path.replace("/", "_").replace(".", "_").upper()
         for line in lines:
             if line.startswith("#pragma once"):
                 line = line.strip()
@@ -132,7 +150,7 @@ class HeaderProcessor:
                 _results.append(replacement)
                 define = f"#define {name}\n"
                 _results.append(define)
-                print('#pragma once -> guarded headers')
+                print("#pragma once -> guarded headers")
                 continue
             _results.append(line)
         _results.append(f"#endif // {name}\n")
@@ -142,8 +160,9 @@ class HeaderProcessor:
         """main tranformation pipeline"""
         _transformers = [
             "normalize_header_include_statements",
-            "normalize_header_guards",
         ]
+        if self.header_guards:
+            _transformers.append("normalize_header_guards")
         for transformer in _transformers:
             lines = getattr(self, transformer)(lines, base_path)
         return lines
@@ -151,22 +170,33 @@ class HeaderProcessor:
     def get_base_path(self, header_path):
         """retrieves base path, or the path which follows `self.path`"""
         path = self.path
-        if not path.endswith('/'):
+        if not path.endswith("/"):
             path = f"{path}/"
-        return header_path[len(path):]
+        return header_path[len(path) :]
 
     def process_headers(self):
         """process headers from path recursively"""
-        if self.backup:
-            shutil.copytree(self.path, f"{self.path}__BACKUP")
+        if self.output_dir:
+            def ignore_files(directory, files):
+                return [f for f in files if os.path.isfile(os.path.join(directory, f))]
+            shutil.copytree(self.path, self.output_dir, ignore=ignore_files)
+        else:
+            if not self.skip_backup and not self.dry_run:
+                # default backup
+                tstamp = time.strftime("%Y%m%d%H%M%S")
+                shutil.copytree(self.path, f"{self.path}-{tstamp}")
+
         headers = self.get_headers()
         for header_path in headers:
             base_path = self.get_base_path(header_path)
-            print(base_path)            
+            print(base_path)
             with open(header_path, encoding="utf-8") as fopen:
                 lines = fopen.readlines()
             _result = self.transform(lines, base_path)
             if not self.dry_run:
+                if self.output_dir:
+                    header_path = os.path.join(self.output_dir, base_path)
+                    print("header_path:", header_path)
                 with open(header_path, "w", encoding="utf-8") as fwrite:
                     fwrite.writelines(_result)
             print()
@@ -181,38 +211,70 @@ class HeaderProcessor:
     def commandline(cls):
         """commmandline api"""
         parser = argparse.ArgumentParser(
-            description="Convert headers to a binder friendly format."
+            description=(
+                "Convert headers to a binder friendly format. "
+                f"(default: {cls.DEFAULT_HEADER_ENDINGS})"
+            ),
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
 
-        parser.add_argument("path", help="path to include directory")
+        required = option = parser.add_argument
 
-        parser.add_argument(
+        required("path", help="path to include directory")
+
+        option(
+            "--output-dir",
+            "-o",
+            help="output directory for modified headers",
+        )
+
+        option(
+            "--header-endings",
+            "-e",
+            nargs="+",
+        )
+
+        option(
+            "--header-guards",
+            action="store_true",
+            help="convert `#pragma once` to header guards",
+        )
+
+        option(
             "--dry-run",
             "-d",
             action="store_true",
             help="run in dry-run mode without actual changes",
         )
 
-        parser.add_argument("--backup", "-b", action="store_true", help="create backup")
+        option("--skip-backup", "-s", action="store_true", help="skip creating backup if output_dir is not provided")
 
-        parser.add_argument(
-            "--list", "-l", action="store_true", help="list target headers only"
-        )
+        option("--list", "-l", action="store_true", help="list target headers only")
 
-        parser.add_argument(
-            "--graph", "-g", type=str, help="path to output graphviz graph [png|pdf|svg]"
+        option(
+            "--graph",
+            "-g",
+            help="output path for graphviz graph with format suffix [png|pdf|svg]",
         )
 
         args = parser.parse_args()
 
         if args.path:
-            app = cls(args.path, args.dry_run, args.backup)
+            app = cls(
+                args.path,
+                args.output_dir,
+                args.header_endings,
+                args.header_guards,
+                args.dry_run,
+                args.skip_backup,
+            )
             if args.list:
                 app.list_target_headers()
             else:
                 app.process_headers()
                 if args.graph:
                     app.graph.render(outfile=args.graph)
+
 
 if __name__ == "__main__":
     HeaderProcessor.commandline()

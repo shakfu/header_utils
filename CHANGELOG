@@ -1,0 +1,8 @@
+
+
+- Made the following changes as per Sergey Lyskov's feedback (thanks!):
+	- [x] can supply output-dir (instead of transformation in place)
+	- [x] header guards transformations are now optional
+	- [x] can specify a list of possible header file extensions. Defaults are [".h", ".hpp", ".hh"]
+
+- Initial releases
