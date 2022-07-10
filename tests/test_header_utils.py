@@ -379,3 +379,22 @@ def test_process_headers():
     if os.path.exists(target):
         shutil.rmtree(target)
 
+def test_process_output_dir():
+    test_headers = 'tests/include-before'
+    output_dir = 'tests/include'
+    if os.path.exists(output_dir):
+        shutil.rmtree(output_dir)
+
+    # assert 'before-changes' state is the same
+    before = HeaderProcessor(path='tests/include-before')
+    assert before.get_include_statements() == BEFORE
+
+    # process output_dir
+    after = HeaderProcessor(path=test_headers, output_dir=output_dir)
+    after.process_headers()
+
+    # assert 'post-changes' state is as required
+    assert after.get_include_statements(from_output_dir=True) == AFTER
+
+    if os.path.exists(output_dir):
+        shutil.rmtree(output_dir)

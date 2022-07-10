@@ -63,6 +63,7 @@ class HeaderProcessor:
     ):
         self.path = path
         self.output_dir = output_dir
+        self.using_output_dir = True if output_dir else False
         self.header_endings = (
             header_endings if header_endings else self.DEFAULT_HEADER_ENDINGS
         )
@@ -74,13 +75,17 @@ class HeaderProcessor:
         else:
             self.graph = None
 
-    def get_headers(self, sort: bool = False) -> list[str]:
+    def get_headers(self, sort: bool = False, from_output_dir: bool = False) -> list[str]:
         """recursively get all header files
 
-        Can be sorted optionally.
+        Can be sorted optionally and retrieved from output_dir
         """
+        if from_output_dir:
+            path = self.output_dir
+        else:
+            path = self.path
         results = []
-        for root, _, files in os.walk(self.path):
+        for root, _, files in os.walk(path):
             for fname in files:
                 if any(fname.endswith(e) for e in self.header_endings):
                     results.append(os.path.join(root, fname))
@@ -88,10 +93,10 @@ class HeaderProcessor:
             return sorted(results)
         return results
 
-    def get_include_statements(self) -> list[str]:
+    def get_include_statements(self, sort: bool = False, from_output_dir: bool = False) -> list[str]:
         """recursively get all include statements"""
         _results = []
-        for header in self.get_headers():
+        for header in self.get_headers(sort, from_output_dir):
             with open(header, encoding="utf-8") as fopen:
                 lines = fopen.readlines()
                 for line in lines:
