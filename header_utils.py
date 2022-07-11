@@ -18,6 +18,7 @@ repo: <https://github.com/shakfu/header_utils>
 
 """
 import argparse
+import logging
 import os
 import re
 import shutil
@@ -35,24 +36,24 @@ except ImportError:
 __version__ = "0.1.1"
 
 
+DEBUG = False
+
+logging.basicConfig(
+    format="%(levelname)s - %(message)s", level=logging.DEBUG if DEBUG else logging.INFO
+)
+
+
 class HeaderProcessor:
     """Recursively processes header declarations for binder
 
     Args:
         input_dir        (str): Path to `include` directory containing source headers.
-
-        output_dir       (str): Path to destination `include` directory to contain
-                                changed headers.
-
+        output_dir       (str): Path to destination `include` directory for changed headers.
         header_endings ([str]): Header endings to apply transformations to.
                                 (defaults to [".h", ".hpp", ".hh"])
-
         header_guards   (bool): Activate `#pragma once` to header guards transformation.
-
         dry_run         (bool): Process headers without changing anything.
-
         force_overwrite (bool): Force overwrite output_dir if it already exists.
-
     """
 
     PATTERN: ClassVar = re.compile(r"^#include \"(.+)\"")
@@ -79,6 +80,7 @@ class HeaderProcessor:
             self.graph = graphviz.Digraph("dependencies", comment="Header References")
         else:
             self.graph = None
+        self.log = logging.getLogger(self.__class__.__name__)
 
     def process_headers(self):
         """main process to transform headers from path recursively
@@ -89,9 +91,12 @@ class HeaderProcessor:
         def _ignore_files(directory, files):
             return [f for f in files if os.path.isfile(os.path.join(directory, f))]
 
+        self.log.info("START: transforming headers in '%s' to '%s'", self.input_dir, self.output_dir)
+        if self.dry_run:
+            self.log.info("DRY-RUN MODE: ON")
         if not self.dry_run:
             if not self.output_dir:
-                print("header_utils: must provide output_dir if dry-run is False")
+                self.log.warning("Must provide output_dir if dry-run is False")
                 sys.exit(1)
             shutil.copytree(
                 self.input_dir,
@@ -102,7 +107,7 @@ class HeaderProcessor:
 
         for header_path in self.get_headers():
             base_path = self.get_base_path(header_path)
-            print(base_path)
+            self.log.info(base_path)
             with open(header_path, encoding="utf-8") as fopen:
                 lines = fopen.readlines()
             _result = self.transform(lines, base_path)
@@ -110,7 +115,8 @@ class HeaderProcessor:
                 header_path = os.path.join(self.output_dir, base_path)
                 with open(header_path, "w", encoding="utf-8") as fwrite:
                     fwrite.writelines(_result)
-            print()
+
+        self.log.info("END: transforming headers in '%s' to '%s'", self.input_dir, self.output_dir)
 
     def get_headers(
         self, sort: bool = False, from_output_dir: bool = False
@@ -163,7 +169,7 @@ class HeaderProcessor:
                 _results.append(replacement)
                 define = f"#define {name}\n"
                 _results.append(define)
-                print("#pragma once -> guarded headers")
+                self.log.info("#pragma once -> guarded headers")
                 continue
             _results.append(line)
         _results.append(f"#endif // {name}\n")
@@ -182,10 +188,9 @@ class HeaderProcessor:
                         line, base_path
                     )
                     _result.append(abs_include)
-                    print(
-                        "  ",
+                    self.log.info(
+                        "  %s -> %s",
                         line.lstrip("#include "),
-                        "->",
                         abs_include.strip().lstrip("#include "),
                     )
                     if HAVE_GRAPHVIZ and self.graph:
@@ -197,9 +202,8 @@ class HeaderProcessor:
     def normalize_include_statement(self, line: str, base_path: str) -> tuple[str, str]:
         """normalize include statement
 
-        converts:
-            `"` to pointy braces
-            relative to absolute paths
+        Changes include statement quotes to pointy brackets and
+        relative header references to absolute ones.
         """
         match = self.PATTERN.match(line)
         if match:
@@ -226,7 +230,7 @@ class HeaderProcessor:
         """recursively list all headers"""
         headers = self.get_headers()
         for header_path in headers:
-            print(header_path)
+            self.log.info(header_path)
 
     def get_include_statements(
         self, sort: bool = False, from_output_dir: bool = False
