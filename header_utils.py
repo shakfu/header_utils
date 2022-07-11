@@ -21,11 +21,11 @@ import argparse
 import os
 import re
 import shutil
+import sys
 from typing import ClassVar
 
 try:
     import graphviz  # type: ignore
-
     HAVE_GRAPHVIZ = True
 except ImportError:
     HAVE_GRAPHVIZ = False
@@ -79,12 +79,42 @@ class HeaderProcessor:
         else:
             self.graph = None
 
-    def get_headers(
-        self, sort: bool = False, from_output_dir: bool = False
-    ) -> list[str]:
-        """recursively get all header files
+    def process_headers(self):
+        """main process to transform headers from path recursively
 
-        Can be sorted optionally and retrieved from output_dir
+        Does not write changes if .dry_run is True
+        """
+
+        def ignore_files(directory, files):
+            return [f for f in files if os.path.isfile(os.path.join(directory, f))]
+
+        if not self.dry_run:
+            if not self.output_dir:
+                print("header_utils: must provide output_dir if dry-run is False")
+                sys.exit(1)
+            shutil.copytree(
+                self.input_dir,
+                self.output_dir,
+                ignore=ignore_files,
+                dirs_exist_ok=self.force_overwrite,
+            )
+
+        for header_path in self.get_headers():
+            base_path = self.get_base_path(header_path)
+            print(base_path)
+            with open(header_path, encoding="utf-8") as fopen:
+                lines = fopen.readlines()
+            _result = self.transform(lines, base_path)
+            if not self.dry_run:
+                header_path = os.path.join(self.output_dir, base_path)
+                with open(header_path, "w", encoding="utf-8") as fwrite:
+                    fwrite.writelines(_result)
+            print()
+
+    def get_headers(self, sort: bool = False, from_output_dir: bool = False) -> list[str]:
+        """retrieve all header files recursively
+
+        Can be optionally sorted and retrieved from output_dir
         """
         if from_output_dir:
             path = self.output_dir
@@ -99,32 +129,40 @@ class HeaderProcessor:
             return sorted(results)
         return results
 
-    def get_include_statements(
-        self, sort: bool = False, from_output_dir: bool = False
-    ) -> list[str]:
-        """recursively get all include statements"""
-        _results = []
-        for header in self.get_headers(sort, from_output_dir):
-            with open(header, encoding="utf-8") as fopen:
-                lines = fopen.readlines()
-                for line in lines:
-                    if line.startswith("#include "):
-                        _results.append(line.strip())
-        return _results
+    def get_base_path(self, header_path):
+        """retrieves base path, or the path which follows `self.input_dir`"""
+        path = self.input_dir
+        if not path.endswith("/"):
+            path = f"{path}/"
+        return header_path[len(path) :]
 
-    def mk_absolute_include(self, base_path: str, relative_path: str):
-        """converts relative path to absolute path"""
-        base_parts = base_path.split("/")
-        relative_parts = relative_path.split("/")
-        base_parts.pop()
-        for part in relative_parts:
-            if part == ".":
+    def transform(self, lines: list[str], base_path: str):
+        """main tranformation pipeline"""
+        _transformers = [
+            "normalize_header_include_statements",
+        ]
+        if self.header_guards:
+            _transformers.append("normalize_header_guards")
+        for transformer in _transformers:
+            lines = getattr(self, transformer)(lines, base_path)
+        return lines
+
+    def normalize_header_guards(self, lines: list[str], base_path: str):
+        """convert '#pragma once' to guarded headers"""
+        _results = []
+        name = base_path.replace("/", "_").replace(".", "_").upper()
+        for line in lines:
+            if line.startswith("#pragma once"):
+                line = line.strip()
+                replacement = f"#ifndef {name}\n"
+                _results.append(replacement)
+                define = f"#define {name}\n"
+                _results.append(define)
+                print("#pragma once -> guarded headers")
                 continue
-            if part == "..":
-                base_parts.pop()
-            else:
-                base_parts.append(part)
-        return "/".join(base_parts)
+            _results.append(line)
+        _results.append(f"#endif // {name}\n")
+        return _results
 
     def normalize_header_include_statements(self, lines: list[str], base_path: str):
         """convert quotes to pointy brackets in an an include statement"""
@@ -159,76 +197,40 @@ class HeaderProcessor:
         match = self.PATTERN.match(line)
         if match:
             rel_ref = match.group(1)
-            abs_ref = self.mk_absolute_include(base_path, rel_ref)
+            abs_ref = self.convert_rel_to_abs_path_ref(base_path, rel_ref)
             return (abs_ref, f"#include <{abs_ref}>\n")
         raise ValueError
 
-    def normalize_header_guards(self, lines: list[str], base_path: str):
-        """convert '#pragma once' to guarded headers"""
-        _results = []
-        name = base_path.replace("/", "_").replace(".", "_").upper()
-        for line in lines:
-            if line.startswith("#pragma once"):
-                line = line.strip()
-                replacement = f"#ifndef {name}\n"
-                _results.append(replacement)
-                define = f"#define {name}\n"
-                _results.append(define)
-                print("#pragma once -> guarded headers")
+    def convert_rel_to_abs_path_ref(self, base_path: str, relative_path: str):
+        """converts relative path to absolute path"""
+        base_parts = base_path.split("/")
+        relative_parts = relative_path.split("/")
+        base_parts.pop()
+        for part in relative_parts:
+            if part == ".":
                 continue
-            _results.append(line)
-        _results.append(f"#endif // {name}\n")
-        return _results
-
-    def transform(self, lines: list[str], base_path: str):
-        """main tranformation pipeline"""
-        _transformers = [
-            "normalize_header_include_statements",
-        ]
-        if self.header_guards:
-            _transformers.append("normalize_header_guards")
-        for transformer in _transformers:
-            lines = getattr(self, transformer)(lines, base_path)
-        return lines
-
-    def get_base_path(self, header_path):
-        """retrieves base path, or the path which follows `self.input_dir`"""
-        path = self.input_dir
-        if not path.endswith("/"):
-            path = f"{path}/"
-        return header_path[len(path) :]
-
-    def process_headers(self):
-        """process headers from path recursively"""
-
-        def ignore_files(directory, files):
-            return [f for f in files if os.path.isfile(os.path.join(directory, f))]
-
-        shutil.copytree(
-            self.input_dir,
-            self.output_dir,
-            ignore=ignore_files,
-            dirs_exist_ok=self.force_overwrite,
-        )
-
-        headers = self.get_headers()
-        for header_path in headers:
-            base_path = self.get_base_path(header_path)
-            print(base_path)
-            with open(header_path, encoding="utf-8") as fopen:
-                lines = fopen.readlines()
-            _result = self.transform(lines, base_path)
-            if not self.dry_run:
-                header_path = os.path.join(self.output_dir, base_path)
-                with open(header_path, "w", encoding="utf-8") as fwrite:
-                    fwrite.writelines(_result)
-            print()
+            if part == "..":
+                base_parts.pop()
+            else:
+                base_parts.append(part)
+        return "/".join(base_parts)
 
     def list_target_headers(self):
         """recursively list all headers"""
         headers = self.get_headers()
         for header_path in headers:
             print(header_path)
+
+    def get_include_statements(self, sort: bool = False, from_output_dir: bool = False) -> list[str]:
+        """recursively get all include statements"""
+        _results = []
+        for header in self.get_headers(sort, from_output_dir):
+            with open(header, encoding="utf-8") as fopen:
+                lines = fopen.readlines()
+                for line in lines:
+                    if line.startswith("#include "):
+                        _results.append(line.strip())
+        return _results
 
     @classmethod
     def commandline(cls):
@@ -245,7 +247,7 @@ class HeaderProcessor:
 
         required("input_dir", help="input include directory containing source headers")
 
-        required("output_dir", help="output directory for modified headers")
+        option("--output_dir", "-o", help="output directory for modified headers")
 
         option(
             "--header-endings",

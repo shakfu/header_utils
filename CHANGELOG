@@ -4,9 +4,9 @@
 - HeaderProcessor improvements
 	- improved documentation
 	- no more in-place changes (source include directory is never modified)
-	- constructor now requires both an `input_dir` and `output_dir`
 	- dropped backups as they are not needed in new structure
 	- added -force-overwrite option to overwrite output_dir if it exists
+	- in dry-mode, output_dir is not required and a dependency graph can be generated
 
 - Made the following changes as per Sergey Lyskov's feedback (thanks!):
 	- can supply output-dir (instead of transformation in place)

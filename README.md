@@ -62,33 +62,38 @@ brew install graphviz
 
 A few usage examples (full commandline api is provided below):
 
-```bash
-./header_utils.py --dry-run include
-```
+Note: As a safety measure: `header_utils.py` does not do in-place transformations.
+It will always write its transformations to a copy of the `input_dir`.  
 
-Apply default transformations in `dry-run` mode without making any changes.
+If `dry-mode` is active no changes are made. 
 
-```bash
-./header_utils.py --output-dir=include-mod include
-```
-
-Apply default transformations to headers copied to an `output-dir`. 
+If dry-mode is not active, then an `output_dir` must be provided.
 
 
-```bash
-./header_utils.py --graph=depends.pdf include
-```
+1. Dry-run mode
 
-Apply default transformations 'in-place' to headers in the `include` directory.
-and generate a pdf graph of header-file dependencies using graphviz.
-An automatic time-stamped backup will be made in this case. 
+  ```bash
+  ./header_utils.py --graph=depends.pdf --dry-run include
+  ```
 
+  Print out default transformations in `dry-run` mode without making any changes.
 
-```bash
-./header_utils.py --header-endings .hpp include
-```
+2. Transformation mode with depenency graph generation
 
-Run `header_utils`'s default transformations in `in-place` mode. Only headers with an `.hpp` suffix will be modified as opposed to any with the default ['.h', '.hpp', '.hh'] endings.
+  ```bash
+  ./header_utils.py include-src include-dst
+  ```
+
+  Apply default transformations to headers copied to `include-dst`.
+  Also generate a pdf graph of header-file dependencies using graphviz.
+
+3. Transformation mode with custom endings filter
+
+  ```bash
+  ./header_utils.py --header-endings .hpp include-src include-dst
+  ```
+
+  Run `header_utils` with default transformations. In this case, only headers with an `.hpp` suffix will be modified as opposed to the default: any with ['.h', '.hpp', '.hh'] endings.
 
 
 ## Commandline API
