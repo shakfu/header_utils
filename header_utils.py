@@ -26,6 +26,7 @@ from typing import ClassVar
 
 try:
     import graphviz  # type: ignore
+
     HAVE_GRAPHVIZ = True
 except ImportError:
     HAVE_GRAPHVIZ = False
@@ -85,7 +86,7 @@ class HeaderProcessor:
         Does not write changes if .dry_run is True
         """
 
-        def ignore_files(directory, files):
+        def _ignore_files(directory, files):
             return [f for f in files if os.path.isfile(os.path.join(directory, f))]
 
         if not self.dry_run:
@@ -95,7 +96,7 @@ class HeaderProcessor:
             shutil.copytree(
                 self.input_dir,
                 self.output_dir,
-                ignore=ignore_files,
+                ignore=_ignore_files,
                 dirs_exist_ok=self.force_overwrite,
             )
 
@@ -111,8 +112,12 @@ class HeaderProcessor:
                     fwrite.writelines(_result)
             print()
 
-    def get_headers(self, sort: bool = False, from_output_dir: bool = False) -> list[str]:
+    def get_headers(
+        self, sort: bool = False, from_output_dir: bool = False
+    ) -> list[str]:
         """retrieve all header files recursively
+
+        Returns a list of normalized header paths.
 
         Can be optionally sorted and retrieved from output_dir
         """
@@ -129,14 +134,14 @@ class HeaderProcessor:
             return sorted(results)
         return results
 
-    def get_base_path(self, header_path):
+    def get_base_path(self, header_path: str) -> str:
         """retrieves base path, or the path which follows `self.input_dir`"""
         path = self.input_dir
         if not path.endswith("/"):
             path = f"{path}/"
         return header_path[len(path) :]
 
-    def transform(self, lines: list[str], base_path: str):
+    def transform(self, lines: list[str], base_path: str) -> list[str]:
         """main tranformation pipeline"""
         _transformers = [
             "normalize_header_include_statements",
@@ -147,7 +152,7 @@ class HeaderProcessor:
             lines = getattr(self, transformer)(lines, base_path)
         return lines
 
-    def normalize_header_guards(self, lines: list[str], base_path: str):
+    def normalize_header_guards(self, lines: list[str], base_path: str) -> list[str]:
         """convert '#pragma once' to guarded headers"""
         _results = []
         name = base_path.replace("/", "_").replace(".", "_").upper()
@@ -164,7 +169,9 @@ class HeaderProcessor:
         _results.append(f"#endif // {name}\n")
         return _results
 
-    def normalize_header_include_statements(self, lines: list[str], base_path: str):
+    def normalize_header_include_statements(
+        self, lines: list[str], base_path: str
+    ) -> list[str]:
         """convert quotes to pointy brackets in an an include statement"""
         _result = []
         for line in lines:
@@ -187,7 +194,7 @@ class HeaderProcessor:
             _result.append(line)
         return _result
 
-    def normalize_include_statement(self, line: str, base_path: str):
+    def normalize_include_statement(self, line: str, base_path: str) -> tuple[str, str]:
         """normalize include statement
 
         converts:
@@ -201,7 +208,7 @@ class HeaderProcessor:
             return (abs_ref, f"#include <{abs_ref}>\n")
         raise ValueError
 
-    def convert_rel_to_abs_path_ref(self, base_path: str, relative_path: str):
+    def convert_rel_to_abs_path_ref(self, base_path: str, relative_path: str) -> str:
         """converts relative path to absolute path"""
         base_parts = base_path.split("/")
         relative_parts = relative_path.split("/")
@@ -221,7 +228,9 @@ class HeaderProcessor:
         for header_path in headers:
             print(header_path)
 
-    def get_include_statements(self, sort: bool = False, from_output_dir: bool = False) -> list[str]:
+    def get_include_statements(
+        self, sort: bool = False, from_output_dir: bool = False
+    ) -> list[str]:
         """recursively get all include statements"""
         _results = []
         for header in self.get_headers(sort, from_output_dir):
