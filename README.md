@@ -77,6 +77,7 @@ If dry-mode is not active, then an `output_dir` must be provided.
   ```
 
   Print out default transformations in `dry-run` mode without making any changes.
+  Also generate a pdf graph of header-file dependencies using graphviz.
 
 2. Transformation mode with depenency graph generation
 
@@ -85,7 +86,6 @@ If dry-mode is not active, then an `output_dir` must be provided.
   ```
 
   Apply default transformations to headers copied to `include-dst`.
-  Also generate a pdf graph of header-file dependencies using graphviz.
 
 3. Transformation mode with custom endings filter
 
