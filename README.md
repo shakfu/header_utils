@@ -79,7 +79,7 @@ If dry-mode is not active, then an `output_dir` must be provided.
 Print out default transformations in `dry-run` mode without making any changes.
 Also generate a pdf graph of header-file dependencies using graphviz.
 
-### 2. Transformation mode with depenency graph generation
+### 2. Default Transformations with dependency graph generation
 
 ```bash
 ./header_utils.py include-src include-dst
@@ -87,13 +87,13 @@ Also generate a pdf graph of header-file dependencies using graphviz.
 
 Apply default transformations to headers copied to `include-dst`.
 
-### 3. Transformation mode with custom endings filter
+### 3. Default Transformations with custom endings filter
 
 ```bash
 ./header_utils.py --header-endings .hpp include-src include-dst
 ```
 
-Run `header_utils` with default transformations. In this case, only headers with an `.hpp` suffix will be modified as opposed to the default: any with ['.h', '.hpp', '.hh'] endings.
+In this case, only headers with an `.hpp` suffix will be modified as opposed to the default: any with ['.h', '.hpp', '.hh'] endings.
 
 
 ## Commandline API
