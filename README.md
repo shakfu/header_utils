@@ -70,30 +70,30 @@ If `dry-mode` is active no changes are made.
 If dry-mode is not active, then an `output_dir` must be provided.
 
 
-1. Dry-run mode
+### 1. Dry-run mode
 
-  ```bash
-  ./header_utils.py --graph=depends.pdf --dry-run include
-  ```
+```bash
+./header_utils.py --graph=depends.pdf --dry-run include
+```
 
-  Print out default transformations in `dry-run` mode without making any changes.
-  Also generate a pdf graph of header-file dependencies using graphviz.
+Print out default transformations in `dry-run` mode without making any changes.
+Also generate a pdf graph of header-file dependencies using graphviz.
 
-2. Transformation mode with depenency graph generation
+### 2. Transformation mode with depenency graph generation
 
-  ```bash
-  ./header_utils.py include-src include-dst
-  ```
+```bash
+./header_utils.py include-src include-dst
+```
 
-  Apply default transformations to headers copied to `include-dst`.
+Apply default transformations to headers copied to `include-dst`.
 
-3. Transformation mode with custom endings filter
+### 3. Transformation mode with custom endings filter
 
-  ```bash
-  ./header_utils.py --header-endings .hpp include-src include-dst
-  ```
+```bash
+./header_utils.py --header-endings .hpp include-src include-dst
+```
 
-  Run `header_utils` with default transformations. In this case, only headers with an `.hpp` suffix will be modified as opposed to the default: any with ['.h', '.hpp', '.hh'] endings.
+Run `header_utils` with default transformations. In this case, only headers with an `.hpp` suffix will be modified as opposed to the default: any with ['.h', '.hpp', '.hh'] endings.
 
 
 ## Commandline API
