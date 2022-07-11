@@ -4,8 +4,6 @@
 Provides `HeaderProcessor`, a utility class to recursively process header
 declarations for [binder](https://github.com/RosettaCommons/binder).
 
-see repo: <https://github.com/shakfu/header_utils>
-
 Default header transformations:
     -> change_quotes_to_pointy_brackets
     -> change_relative_to_absolute_header_references
@@ -16,14 +14,14 @@ Optional header transformations
 Additional Features:
     - generate graph of header references in [png|svg|pdf|dot] format
 
+repo: <https://github.com/shakfu/header_utils>
+
 """
 import argparse
 import os
 import re
 import shutil
-import time
 from typing import ClassVar
-
 
 try:
     import graphviz  # type: ignore
@@ -33,20 +31,27 @@ except ImportError:
     HAVE_GRAPHVIZ = False
 
 
+__version__ = "0.1.1"
+
+
 class HeaderProcessor:
     """Recursively processes header declarations for binder
 
-    This is done via a pipeline of transformers:
-        -> change_quotes_to_pointy_brackets
-        -> change_relative_to_absolute_header_references
+    Args:
+        input_dir        (str): Path to `include` directory containing source headers.
 
-        (optional transformers)
-        -> change_pragma_one_to_header_guards
+        output_dir       (str): Path to destination `include` directory to contain
+                                changed headers.
 
-        (optional analysis)
-        - generate graph of header references in [png|svg|pdf|dot] format
+        header_endings ([str]): Header endings to apply transformations to.
+                                (defaults to [".h", ".hpp", ".hh"])
 
-    see repo: <https://github.com/shakfu/header_utils>
+        header_guards   (bool): Activate `#pragma once` to header guards transformation.
+
+        dry_run         (bool): Process headers without changing anything.
+
+        force_overwrite (bool): Force overwrite output_dir if it already exists.
+
     """
 
     PATTERN: ClassVar = re.compile(r"^#include \"(.+)\"")
@@ -54,28 +59,29 @@ class HeaderProcessor:
 
     def __init__(
         self,
-        path: str,
-        output_dir: str = None,  # type: ignore
+        input_dir: str,
+        output_dir: str,
         header_endings: list[str] = None,  # type: ignore
         header_guards: bool = False,
         dry_run: bool = False,
-        skip_backup: bool = False,
+        force_overwrite: bool = False,
     ):
-        self.path = path
+        self.input_dir = input_dir
         self.output_dir = output_dir
-        self.using_output_dir = True if output_dir else False
         self.header_endings = (
             header_endings if header_endings else self.DEFAULT_HEADER_ENDINGS
         )
         self.header_guards = header_guards
         self.dry_run = dry_run
-        self.skip_backup = skip_backup
+        self.force_overwrite = force_overwrite
         if HAVE_GRAPHVIZ:
             self.graph = graphviz.Digraph("dependencies", comment="Header References")
         else:
             self.graph = None
 
-    def get_headers(self, sort: bool = False, from_output_dir: bool = False) -> list[str]:
+    def get_headers(
+        self, sort: bool = False, from_output_dir: bool = False
+    ) -> list[str]:
         """recursively get all header files
 
         Can be sorted optionally and retrieved from output_dir
@@ -83,7 +89,7 @@ class HeaderProcessor:
         if from_output_dir:
             path = self.output_dir
         else:
-            path = self.path
+            path = self.input_dir
         results = []
         for root, _, files in os.walk(path):
             for fname in files:
@@ -93,7 +99,9 @@ class HeaderProcessor:
             return sorted(results)
         return results
 
-    def get_include_statements(self, sort: bool = False, from_output_dir: bool = False) -> list[str]:
+    def get_include_statements(
+        self, sort: bool = False, from_output_dir: bool = False
+    ) -> list[str]:
         """recursively get all include statements"""
         _results = []
         for header in self.get_headers(sort, from_output_dir):
@@ -120,7 +128,6 @@ class HeaderProcessor:
 
     def normalize_header_include_statements(self, lines: list[str], base_path: str):
         """convert quotes to pointy brackets in an an include statement"""
-        _shorten = lambda s: s.lstrip("#include ")
         _result = []
         for line in lines:
             if line.startswith("#include "):
@@ -130,7 +137,12 @@ class HeaderProcessor:
                         line, base_path
                     )
                     _result.append(abs_include)
-                    print("  ", _shorten(line), "->", _shorten(abs_include.strip()))
+                    print(
+                        "  ",
+                        line.lstrip("#include "),
+                        "->",
+                        abs_include.strip().lstrip("#include "),
+                    )
                     if HAVE_GRAPHVIZ and self.graph:
                         self.graph.edge(base_path, abs_ref)
                     continue
@@ -180,23 +192,24 @@ class HeaderProcessor:
         return lines
 
     def get_base_path(self, header_path):
-        """retrieves base path, or the path which follows `self.path`"""
-        path = self.path
+        """retrieves base path, or the path which follows `self.input_dir`"""
+        path = self.input_dir
         if not path.endswith("/"):
             path = f"{path}/"
         return header_path[len(path) :]
 
     def process_headers(self):
         """process headers from path recursively"""
-        if self.output_dir:
-            def ignore_files(directory, files):
-                return [f for f in files if os.path.isfile(os.path.join(directory, f))]
-            shutil.copytree(self.path, self.output_dir, ignore=ignore_files)
-        else:
-            if not self.skip_backup and not self.dry_run:
-                # default backup
-                tstamp = time.strftime("%Y%m%d%H%M%S")
-                shutil.copytree(self.path, f"{self.path}-{tstamp}")
+
+        def ignore_files(directory, files):
+            return [f for f in files if os.path.isfile(os.path.join(directory, f))]
+
+        shutil.copytree(
+            self.input_dir,
+            self.output_dir,
+            ignore=ignore_files,
+            dirs_exist_ok=self.force_overwrite,
+        )
 
         headers = self.get_headers()
         for header_path in headers:
@@ -206,9 +219,7 @@ class HeaderProcessor:
                 lines = fopen.readlines()
             _result = self.transform(lines, base_path)
             if not self.dry_run:
-                if self.output_dir:
-                    header_path = os.path.join(self.output_dir, base_path)
-                    print("header_path:", header_path)
+                header_path = os.path.join(self.output_dir, base_path)
                 with open(header_path, "w", encoding="utf-8") as fwrite:
                     fwrite.writelines(_result)
             print()
@@ -232,13 +243,9 @@ class HeaderProcessor:
 
         required = option = parser.add_argument
 
-        required("path", help="path to include directory")
+        required("input_dir", help="input include directory containing source headers")
 
-        option(
-            "--output-dir",
-            "-o",
-            help="output directory for modified headers",
-        )
+        required("output_dir", help="output directory for modified headers")
 
         option(
             "--header-endings",
@@ -259,7 +266,12 @@ class HeaderProcessor:
             help="run in dry-run mode without actual changes",
         )
 
-        option("--skip-backup", "-s", action="store_true", help="skip creating backup if output_dir is not provided")
+        option(
+            "--force-overwrite",
+            "-f",
+            action="store_true",
+            help="force overwrite output_dir if it already exists",
+        )
 
         option("--list", "-l", action="store_true", help="list target headers only")
 
@@ -271,14 +283,14 @@ class HeaderProcessor:
 
         args = parser.parse_args()
 
-        if args.path:
+        if args.input_dir:
             app = cls(
-                args.path,
+                args.input_dir,
                 args.output_dir,
                 args.header_endings,
                 args.header_guards,
                 args.dry_run,
-                args.skip_backup,
+                args.force_overwrite,
             )
             if args.list:
                 app.list_target_headers()

@@ -1,8 +1,18 @@
 
+## v0.1.1
+
+- HeaderProcessor improvements
+	- improved documentation
+	- no more in-place changes (source include directory is never modified)
+	- constructor now requires both an `input_dir` and `output_dir`
+	- dropped backups as they are not needed in new structure
+	- added -force-overwrite option to overwrite output_dir if it exists
 
 - Made the following changes as per Sergey Lyskov's feedback (thanks!):
-	- [x] can supply output-dir (instead of transformation in place)
-	- [x] header guards transformations are now optional
-	- [x] can specify a list of possible header file extensions. Defaults are [".h", ".hpp", ".hh"]
+	- can supply output-dir (instead of transformation in place)
+	- header guards transformations are now optional
+	- can specify a list of possible header file extensions. Defaults are [".h", ".hpp", ".hh"]
+
+## v0.1
 
 - Initial releases

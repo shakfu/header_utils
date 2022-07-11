@@ -94,29 +94,31 @@ Run `header_utils`'s default transformations in `in-place` mode. Only headers wi
 ## Commandline API
 
 ```text
-usage: header_utils.py [-h] [--output-dir OUTPUT_DIR]
+usage: header_utils.py [-h]
                        [--header-endings HEADER_ENDINGS [HEADER_ENDINGS ...]]
-                       [--header-guards] [--dry-run] [--skip-backup] [--list]
-                       [--graph GRAPH]
-                       path
+                       [--header-guards] [--dry-run] [--force-overwrite]
+                       [--list] [--graph GRAPH]
+                       input_dir output_dir
 
 Convert headers to a binder friendly format. (default: ['.h', '.hpp', '.hh'])
 
 positional arguments:
-  path                  path to include directory
+  input_dir             input include directory containing source headers
+  output_dir            output directory for modified headers
 
 optional arguments:
   -h, --help            show this help message and exit
-  --output-dir OUTPUT_DIR, -o OUTPUT_DIR
-                        output directory for modified headers (default: None)
+
   --header-endings HEADER_ENDINGS [HEADER_ENDINGS ...], -e HEADER_ENDINGS [HEADER_ENDINGS ...]
-  --header-guards       convert `#pragma once` to header guards (default:
-                        False)
-  --dry-run, -d         run in dry-run mode without actual changes (default:
-                        False)
-  --skip-backup, -s     skip creating backup if output_dir is not provided
-                        (default: False)
+  
+  --header-guards       convert `#pragma once` to header guards (default: False)
+  
+  --dry-run, -d         run in dry-run mode without actual changes (default: False)
+
+  --force-overwrite, -f force overwrite output_dir if it already exists (default: False)
+  
   --list, -l            list target headers only (default: False)
+  
   --graph GRAPH, -g GRAPH
                         output path for graphviz graph with format suffix
                         [png|pdf|svg] (default: None)
