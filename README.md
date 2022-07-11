@@ -99,28 +99,31 @@ In this case, only headers with an `.hpp` suffix will be modified as opposed to 
 ## Commandline API
 
 ```text
-usage: header_utils.py [-h]
+usage: header_utils.py [-h] [--output_dir OUTPUT_DIR]
                        [--header-endings HEADER_ENDINGS [HEADER_ENDINGS ...]]
                        [--header-guards] [--dry-run] [--force-overwrite]
                        [--list] [--graph GRAPH]
-                       input_dir output_dir
+                       input_dir
 
 Convert headers to a binder friendly format. (default: ['.h', '.hpp', '.hh'])
 
 positional arguments:
   input_dir             input include directory containing source headers
-  output_dir            output directory for modified headers
 
 optional arguments:
   -h, --help            show this help message and exit
 
+  --output_dir OUTPUT_DIR, -o OUTPUT_DIR
+                        output directory for modified headers (default: None)
+  
   --header-endings HEADER_ENDINGS [HEADER_ENDINGS ...], -e HEADER_ENDINGS [HEADER_ENDINGS ...]
   
   --header-guards       convert `#pragma once` to header guards (default: False)
   
   --dry-run, -d         run in dry-run mode without actual changes (default: False)
-
-  --force-overwrite, -f force overwrite output_dir if it already exists (default: False)
+  
+  --force-overwrite, -f
+                        force overwrite output_dir if it already exists (default: False)
   
   --list, -l            list target headers only (default: False)
   
