@@ -96,13 +96,13 @@ Apply default transformations to headers copied to `include-dst`.
 
 In this case, only headers with an `.hpp` suffix will be modified as opposed to the default: any with ['.h', '.hpp', '.hh'] endings.
 
-### 4. Default Transformations with transform header-guards option
+### 4. Default Transformations with header-guards option
 
 ```bash
 ./header_utils.py --header-guards include-src include-dst
 ```
 
-Apply default transformations to headers and also apply conversion of `#pragma once` entries to header guards.
+Apply default transformations to headers and also convert `#pragma once` entries to header guards.
 
 ## Commandline API
 
@@ -142,7 +142,9 @@ optional arguments:
 
 ## Testing
 
-To test `header_utils.py`, ensure you have `pytest` installed. Note that this project uses the actual headers from the [taskflow](https://github.com/taskflow/taskflow) project to test its functionality.
+To test `header_utils.py`, ensure you have `pytest` installed.
+
+Note: this project uses a snapshot of the actual headers from the [taskflow](https://github.com/taskflow/taskflow) project to test its functionality.
 
 ```bash
 pytest
