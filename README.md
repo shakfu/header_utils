@@ -66,9 +66,9 @@ A few usage examples (full commandline api is provided below):
 
 - As a safety measure: `header_utils.py` does not do in-place transformations. It will *always* write its transformations to a copy of the `input_dir`.  
 
-- If `dry-mode` is active no changes are made. 
+- If `dry-run` mode is active no changes are made, and an `output_dir` need not be provide. In this mode, [graphviz](https://graphviz.org) dependency graphs can be generated from the `input_dir`.
 
-- If dry-mode is not active, then an `output_dir` must be provided.
+- If `dry-run` mode is not active, then an `output_dir` must be provided.
 
 
 ### 1. Dry-run mode
@@ -78,7 +78,7 @@ A few usage examples (full commandline api is provided below):
 ```
 
 Print out default transformations in `dry-run` mode without making any changes.
-Also generate a pdf graph of header-file dependencies using graphviz.
+Also generate a pdf graph of header-file dependencies using [graphviz](https://graphviz.org).
 
 ### 2. Default Transformations with dependency graph generation
 
