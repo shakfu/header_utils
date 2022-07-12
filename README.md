@@ -62,12 +62,13 @@ brew install graphviz
 
 A few usage examples (full commandline api is provided below):
 
-Note: As a safety measure: `header_utils.py` does not do in-place transformations.
-It will always write its transformations to a copy of the `input_dir`.  
+**Note**: 
 
-If `dry-mode` is active no changes are made. 
+- As a safety measure: `header_utils.py` does not do in-place transformations. It will *always* write its transformations to a copy of the `input_dir`.  
 
-If dry-mode is not active, then an `output_dir` must be provided.
+- If `dry-mode` is active no changes are made. 
+
+- If dry-mode is not active, then an `output_dir` must be provided.
 
 
 ### 1. Dry-run mode
@@ -131,3 +132,15 @@ optional arguments:
                         output path for graphviz graph with format suffix
                         [png|pdf|svg] (default: None)
 ```
+
+## Testing
+
+To test `header_utils.py`, ensure you have `pytest` installed. Note that this project uses the actual headers from the [taskflow](https://github.com/taskflow/taskflow) project to test its functionality.
+
+```bash
+pyest
+```
+
+## TODO
+
+- [ ] add more tests

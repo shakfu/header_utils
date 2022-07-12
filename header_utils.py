@@ -81,27 +81,24 @@ class HeaderProcessor:
         else:
             self.graph = None
         self.log = logging.getLogger(self.__class__.__name__)
+        if not os.path.exists(input_dir):
+            self.log.error("provided input_dir argument '%s' does not exist", input_dir)
+            sys.exit(1)
 
     def process_headers(self):
         """main process to transform headers from path recursively
 
         Does not write changes if .dry_run is True
         """
-
-        def _ignore_files(directory, files):
-            return [f for f in files if os.path.isfile(os.path.join(directory, f))]
-
-        self.log.info("START: transforming headers in '%s' to '%s'", self.input_dir, self.output_dir)
+        self.log.info("START: transforming headers in '%s' to '%s'",
+            self.input_dir, self.output_dir)
         if self.dry_run:
             self.log.info("DRY-RUN MODE: ON")
         if not self.dry_run:
             if not self.output_dir:
                 self.log.warning("Must provide output_dir if dry-run is False")
                 sys.exit(1)
-            shutil.copytree(
-                self.input_dir,
-                self.output_dir,
-                ignore=_ignore_files,
+            shutil.copytree(self.input_dir, self.output_dir,
                 dirs_exist_ok=self.force_overwrite,
             )
 
@@ -116,7 +113,8 @@ class HeaderProcessor:
                 with open(header_path, "w", encoding="utf-8") as fwrite:
                     fwrite.writelines(_result)
 
-        self.log.info("END: transforming headers in '%s' to '%s'", self.input_dir, self.output_dir)
+        self.log.info("END: transforming headers in '%s' to '%s'",
+            self.input_dir, self.output_dir)
 
     def get_headers(
         self, sort: bool = False, from_output_dir: bool = False

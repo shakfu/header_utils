@@ -7,6 +7,7 @@
 	- dropped backups as they are not needed in new structure
 	- added -force-overwrite option to overwrite output_dir if it exists
 	- in dry-mode, output_dir is not required and a dependency graph can be generated
+	- added logging
 
 - Made the following changes as per Sergey Lyskov's feedback (thanks!):
 	- can supply output-dir (instead of transformation in place)
