@@ -34,6 +34,7 @@ except ImportError:
 
 __version__ = "0.1.1"
 
+__all__ = ['HeaderProcessor']
 
 DEBUG = False
 
@@ -75,11 +76,11 @@ class HeaderProcessor:
     """Recursively processes header declarations for binder
 
     Args:
-        input_dir        (str): Path to `include` directory containing source headers.
-        output_dir       (str): Path to destination `include` directory for changed headers.
+        input_dir        (str): Directory containing source headers.
+        output_dir       (str): Directory for changed headers.
         header_endings ([str]): Header endings to apply transformations to.
                                 (defaults to [".h", ".hpp", ".hh"])
-        header_guards   (bool): Activate `#pragma once` to header guards transformation.
+        header_guards   (bool): Activate `#pragma once` to header guards transform.
         dry_run         (bool): Process headers without changing anything.
         force_overwrite (bool): Force overwrite output_dir if it already exists.
     """
@@ -114,7 +115,8 @@ class HeaderProcessor:
             sys.exit(1)
 
     def process_headers(self):
-        """main process to transform headers from path recursively
+        """Main process to recursively transform copy of input_dir headers
+        and write them to output_dir.
 
         Does not write changes if .dry_run is True
         """
@@ -145,9 +147,9 @@ class HeaderProcessor:
             self.input_dir, self.output_dir)
 
     def get_headers(self, sort: bool = False, from_output_dir: bool = False) -> list[str]:
-        """retrieve all header files recursively
+        """Retrieve all header files recursively
 
-        Returns a list of normalized header paths.
+        Returns a list of header paths.
 
         Can be optionally sorted and retrieved from output_dir
         """
@@ -165,14 +167,17 @@ class HeaderProcessor:
         return results
 
     def get_base_path(self, header_path: str) -> str:
-        """retrieves base path, or the path which follows `self.input_dir`"""
+        """Returns base path, or the path which follows `self.input_dir`"""
         path = self.input_dir
         if not path.endswith("/"):
             path = f"{path}/"
         return header_path[len(path) :]
 
     def transform(self, lines: list[str], base_path: str) -> list[str]:
-        """main tranformation pipeline"""
+        """Main tranformation pipeline
+
+        Returns a list of header paths.
+        """
         _transformers = [
             "normalize_header_include_statements",
         ]
@@ -183,7 +188,10 @@ class HeaderProcessor:
         return lines
 
     def normalize_header_guards(self, lines: list[str], base_path: str) -> list[str]:
-        """convert '#pragma once' to guarded headers"""
+        """Convert '#pragma once' to guarded headers
+
+        Returns a list of header paths.
+        """
         _results = []
         name = base_path.replace("/", "_").replace(".", "_").upper()
         for line in lines:
@@ -200,7 +208,10 @@ class HeaderProcessor:
         return _results
 
     def normalize_header_include_statements(self, lines: list[str], base_path: str) -> list[str]:
-        """convert quotes to pointy brackets in an an include statement"""
+        """Convert quotes to pointy brackets in an an include statement.
+
+        Returns a list of header paths.
+        """
         _result = []
         for line in lines:
             if line.startswith("#include "):
@@ -222,10 +233,11 @@ class HeaderProcessor:
         return _result
 
     def normalize_include_statement(self, line: str, base_path: str) -> tuple[str, str]:
-        """normalize include statement
+        """Normalize include statement.
 
-        Changes include statement quotes to pointy brackets and
-        relative header references to absolute ones.
+        Changes include statement quotes to pointy brackets and relative header references to absolute ones.
+        Returns a tuple pair of absolute reference of the include statement and
+        the modified include statement itself.
         """
         match = self.PATTERN.match(line)
         if match:
@@ -235,7 +247,10 @@ class HeaderProcessor:
         raise ValueError
 
     def convert_rel_to_abs_path_ref(self, base_path: str, relative_path: str) -> str:
-        """converts relative path to absolute path"""
+        """Converts relative path to absolute path
+
+        Returns absolute path.
+        """
         base_parts = base_path.split("/")
         relative_parts = relative_path.split("/")
         base_parts.pop()
@@ -249,7 +264,7 @@ class HeaderProcessor:
         return "/".join(base_parts)
 
     def list_target_headers(self):
-        """recursively list all headers"""
+        """Recursively list all headers"""
         headers = self.get_headers()
         for header_path in headers:
             self.log.info(header_path)
@@ -257,7 +272,10 @@ class HeaderProcessor:
     def get_include_statements(
         self, sort: bool = False, from_output_dir: bool = False
     ) -> list[str]:
-        """recursively get all include statements"""
+        """Recursively get all include statements.
+
+        Returns a list of header paths.
+        """
         _results = []
         for header in self.get_headers(sort, from_output_dir):
             with open(header, encoding="utf-8") as fopen:
@@ -269,7 +287,7 @@ class HeaderProcessor:
 
     @classmethod
     def commandline(cls):
-        """commmandline api"""
+        """Implements commmandline api"""
         parser = argparse.ArgumentParser(
             description=(
                 "Convert headers to a binder friendly format. "
