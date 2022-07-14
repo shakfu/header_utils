@@ -27,7 +27,6 @@ from typing import ClassVar
 
 try:
     import graphviz  # type: ignore
-
     HAVE_GRAPHVIZ = True
 except ImportError:
     HAVE_GRAPHVIZ = False
@@ -38,10 +37,39 @@ __version__ = "0.1.1"
 
 DEBUG = False
 
-logging.basicConfig(
-    format="%(levelname)s - %(message)s", level=logging.DEBUG if DEBUG else logging.INFO
-)
+class CustomFormatter(logging.Formatter):
+    """custom formatter class to add colors to logging"""
 
+    white = "\x1b[97;20m"
+    GREY = "\x1b[38;20m"
+    GREEN = "\x1b[32;20m"
+    CYAN = "\x1b[36;20m"
+    YELLOW = "\x1b[33;20m"
+    RED = "\x1b[31;20m"
+    RED_BOLD = "\x1b[31;1m"
+    RESET = "\x1b[0m"
+    fmt = "{}%(levelname)s{} - %(message)s"
+
+    FORMATS = {
+        logging.DEBUG: fmt.format(GREY, RESET),
+        logging.INFO: fmt.format(GREEN, RESET),
+        logging.WARNING: fmt.format(YELLOW, RESET),
+        logging.ERROR: fmt.format(RED, RESET),
+        logging.CRITICAL: fmt.format(RED_BOLD, RESET),
+    }
+
+    def format(self, record):
+        log_fmt = self.FORMATS.get(record.levelno)
+        formatter = logging.Formatter(log_fmt, datefmt="%H:%M:%S")
+        return formatter.format(record)
+
+
+__handler = logging.StreamHandler()
+__handler.setFormatter(CustomFormatter())
+logging.basicConfig(
+    level=logging.DEBUG if DEBUG else logging.INFO,
+    handlers=[__handler]
+)
 
 class HeaderProcessor:
     """Recursively processes header declarations for binder
@@ -116,9 +144,7 @@ class HeaderProcessor:
         self.log.info("END: transforming headers in '%s' to '%s'",
             self.input_dir, self.output_dir)
 
-    def get_headers(
-        self, sort: bool = False, from_output_dir: bool = False
-    ) -> list[str]:
+    def get_headers(self, sort: bool = False, from_output_dir: bool = False) -> list[str]:
         """retrieve all header files recursively
 
         Returns a list of normalized header paths.
@@ -173,9 +199,7 @@ class HeaderProcessor:
         _results.append(f"#endif // {name}\n")
         return _results
 
-    def normalize_header_include_statements(
-        self, lines: list[str], base_path: str
-    ) -> list[str]:
+    def normalize_header_include_statements(self, lines: list[str], base_path: str) -> list[str]:
         """convert quotes to pointy brackets in an an include statement"""
         _result = []
         for line in lines:
