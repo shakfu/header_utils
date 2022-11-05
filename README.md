@@ -80,10 +80,10 @@ A few usage examples (full commandline api is provided below):
 Print out default transformations in `dry-run` mode without making any changes.
 Also generate a pdf graph of header-file dependencies using [graphviz](https://graphviz.org).
 
-### 2. Default Transformations with dependency graph generation
+### 2. Default Transformations
 
 ```bash
-./header_utils.py include-src include-dst
+./header_utils.py -o include-dst include-src
 ```
 
 Apply default transformations to headers copied to `include-dst`.
@@ -91,7 +91,7 @@ Apply default transformations to headers copied to `include-dst`.
 ### 3. Default Transformations with custom endings filter
 
 ```bash
-./header_utils.py --header-endings .hpp include-src include-dst
+./header_utils.py -o include-dst --header-endings .hpp include-src
 ```
 
 In this case, only headers with an `.hpp` suffix will be modified as opposed to the default: any with ['.h', '.hpp', '.hh'] endings.
@@ -99,7 +99,7 @@ In this case, only headers with an `.hpp` suffix will be modified as opposed to 
 ### 4. Default Transformations with header-guards option
 
 ```bash
-./header_utils.py --header-guards include-src include-dst
+./header_utils.py -o include-dst --header-guards include-src
 ```
 
 Apply default transformations to headers and also convert `#pragma once` entries to header guards.
